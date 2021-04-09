@@ -77,7 +77,7 @@ jse.set_index('Date', inplace=True)    # I just want this to run properly now
 aex.set_index('Date', inplace=True) 
 EUR_Libor.set_index('DATE', inplace = True)
 EUR_Libor = EUR_Libor.rename(columns = {'EUR3MTD156N': '3M_EUR_Libor'})
-EUR_Libor['3M_EUR_Libor'] = (pd.to_numeric(EUR_Libor['3M_EUR_Libor'], errors='coerce'))/100
+EUR_Libor['3M_EUR_Libor'] = (pd.to_numeric(EUR_Libor['3M_EUR_Libor'], errors='coerce'))/100 #Was in percent.
 #Function to replace '.' observations with average of previous and subsequent observations.
 EUR_Libor['3M_EUR_Libor'] = EUR_Libor['3M_EUR_Libor'].interpolate(method = 'linear', axis = 0)
 
