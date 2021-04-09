@@ -7,10 +7,9 @@ Created on Fri Apr  2 13:38:06 2021
 
 # packages 
 # set directory...
-import os
-os.chdir(r"C:\Users\gebruiker\Documents\GitHub\QFRM")
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 # variable specification:
 abs_weights = [10, 10, 10]
@@ -22,15 +21,16 @@ rel_weights = [abs_weights[0]/sum(abs_weights), abs_weights[1]/sum(abs_weights),
 
 # import data
 # assets:
-nikkei = pd.read_csv(r"C:\Users\gebruiker\Documents\GitHub\QFRM\NIKKEI_225.csv")
-jse = pd.read_csv(r"C:\Users\gebruiker\Documents\GitHub\QFRM\JSE_TOP40.csv")
-aex = pd.read_csv(r"C:\Users\gebruiker\Documents\GitHub\QFRM\AEX.csv")
+nikkei = pd.read_csv(r"/Users/connorstevens/Documents/GitHub/QFRM/NIKKEI_225.csv")
+jse = pd.read_csv(r"/Users/connorstevens/Documents/GitHub/QFRM/JSE_TOP40.csv")
+aex = pd.read_csv(r"/Users/connorstevens/Documents/GitHub/QFRM/AEX.csv")
+EUR_Libor = pd.read_csv(r"/Users/connorstevens/Documents/GitHub/QFRM/EUR3MTD156N.csv")
 #jse['Last'] = pd.to_numeric(jse['Last'])
 
 
 # fx:
-euryen = pd.read_csv(r"C:\Users\gebruiker\Documents\GitHub\QFRM\EUR_YEN.csv")
-eurzar = pd.read_csv(r"C:\Users\gebruiker\Documents\GitHub\QFRM\EUR_ZAR.csv")
+euryen = pd.read_csv(r"/Users/connorstevens/Documents/GitHub/QFRM/EUR_YEN.csv")
+eurzar = pd.read_csv(r"/Users/connorstevens/Documents/GitHub/QFRM/EUR_ZAR.csv")
 
 # debt:
 
@@ -74,7 +74,14 @@ aex = pd.DataFrame(
 
 nikkei.set_index('Date', inplace=True) # kind of roundaboutish and hacky but
 jse.set_index('Date', inplace=True)    # I just want this to run properly now
-aex.set_index('Date', inplace=True)
+aex.set_index('Date', inplace=True) 
+EUR_Libor.set_index('DATE', inplace = True)
+EUR_Libor = EUR_Libor.rename(columns = {'EUR3MTD156N': '3M_EUR_Libor'})
+EUR_Libor['3M_EUR_Libor'] = (pd.to_numeric(EUR_Libor['3M_EUR_Libor'], errors='coerce'))/100
+#Function to replace '.' observations with average of previous and subsequent observations.
+EUR_Libor['3M_EUR_Libor'] = EUR_Libor['3M_EUR_Libor'].interpolate(method = 'linear', axis = 0)
+
+
 
 # create new master df with all mfing uuuuhhh price series...
 df = pd.DataFrame()
@@ -85,6 +92,7 @@ df.set_index('Date', inplace=True)
 df = pd.merge(df, nikkei, left_index = True, right_index = True)
 df = pd.merge(df, jse, left_index = True, right_index = True)
 df = pd.merge(df, aex, left_index = True, right_index = True)
+df = pd.merge(df, EUR_Libor, left_index = True, right_index = True)
 
 df = df.ffill(axis=0)
 
@@ -96,7 +104,6 @@ df = df.ffill(axis=0)
 # - get portfoliowide return...
 
 
-
 df['Vt nikkei'] = abs_weights[0]*df['n_price']
 df['Vt jse'] = abs_weights[1]*df['j_price']
 df['Vt aex'] = abs_weights[2]*df['a_price']
@@ -106,6 +113,7 @@ df['Vt_ret'] = np.log(df.Vt) - np.log(df.Vt.shift(1))
 df['nik_ret'] = np.log(df.n_price) - np.log(df.n_price.shift(1))
 df['jse_ret'] = np.log(df.j_price) - np.log(df.j_price.shift(1))
 df['aex_ret'] = np.log(df.a_price) - np.log(df.a_price.shift(1))
+
 
 ###############################################################################
 # actual assignment part
@@ -119,7 +127,7 @@ wvol_a = rel_weights[2]**2 * np.std(df.aex_ret)
 
 wcov_nj = rel_weights[0]*rel_weights[1]*np.cov(df.nik_ret, df.jse_ret)[0,1]
 wcov_na = rel_weights[0]*rel_weights[2]*np.cov(df.nik_ret, df.aex_ret)[0,1]
-wcov_ja = = rel_weights[1]*rel_weights[2]*np.cov(df.jse_ret, df.aex_ret)[0,1]
+wcov_ja = rel_weights[1]*rel_weights[2]*np.cov(df.jse_ret, df.aex_ret)[0,1]
 
 
 
