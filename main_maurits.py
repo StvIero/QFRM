@@ -11,13 +11,30 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+#These two are for importing csv from github, will need to install requests, io is installed by default.
+import requests
+import io
 
 # variable specification:
 abs_weights = [10, 10, 10]
 rel_weights = [abs_weights[0]/sum(abs_weights), abs_weights[1]/sum(abs_weights), abs_weights[2]/sum(abs_weights)]
 
+#Pull csv from GitHub so we dont have to keep changing directories and file paths.
+Nikurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/NIKKEI_225.csv"
+Nikdownload = requests.get(Nikurl).content
+nikkei = pd.read_csv(io.StringIO(Nikdownload.decode('utf-8')))
 
+JSEurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/JSE_TOP40.csv"
+JSEdownload = requests.get(JSEurl).content
+jse = pd.read_csv(io.StringIO(JSEdownload.decode('utf-8')))
 
+AEXurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/AEX.csv"
+AEXdownload = requests.get(AEXurl).content
+aex = pd.read_csv(io.StringIO(AEXdownload.decode('utf-8')))
+
+LIBurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/EUR3MTD156N.csv"
+LIBdownload = requests.get(JSEurl).content
+EUR_Libor = pd.read_csv(io.StringIO(LIBdownload.decode('utf-8')))
 
 
 # import data
