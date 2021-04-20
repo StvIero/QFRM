@@ -116,12 +116,19 @@ df = pd.DataFrame()
 df['Date'] = dates
 df.set_index('Date', inplace=True)
 
-
+#Merge all dataframes together.
 df = pd.merge(df, nikkei, left_index = True, right_index = True)
 df = pd.merge(df, jse, left_index = True, right_index = True)
 df = pd.merge(df, aex, left_index = True, right_index = True)
 df = pd.merge(df, EUR_Libor, left_index = True, right_index = True)
+df = pd.merge(df, euryen['Bid'], left_index = True, right_index = True)
+df = pd.merge(df, eurzar['Bid'], left_index = True, right_index = True)
 
+#Change column names to distinguish between bid prices.
+df = df.rename(columns = {'Bid_x': 'euryen_bid'})
+df = df.rename(columns = {'Bid_y': 'eurzar_bid'})
+
+#Fill in missing values.
 df = df.ffill(axis=0)
 
 
