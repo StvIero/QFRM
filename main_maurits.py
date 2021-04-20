@@ -19,30 +19,33 @@ import io
 abs_weights = [10, 10, 10]
 rel_weights = [abs_weights[0]/sum(abs_weights), abs_weights[1]/sum(abs_weights), abs_weights[2]/sum(abs_weights)]
 
+
+#import data
 #Pull csv from GitHub so we dont have to keep changing directories and file paths.
-Nikurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/NIKKEI_225.csv"
+Nikurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/Data/NIKKEI_225.csv"
 Nikdownload = requests.get(Nikurl).content
 nikkei = pd.read_csv(io.StringIO(Nikdownload.decode('utf-8')))
 
-JSEurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/JSE_TOP40.csv"
+JSEurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/Data/JSE_TOP40.csv"
 JSEdownload = requests.get(JSEurl).content
 jse = pd.read_csv(io.StringIO(JSEdownload.decode('utf-8')))
 
-AEXurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/AEX.csv"
+AEXurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/Data/AEX.csv"
 AEXdownload = requests.get(AEXurl).content
 aex = pd.read_csv(io.StringIO(AEXdownload.decode('utf-8')))
 
-LIBurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/EUR3MTD156N.csv"
-LIBdownload = requests.get(JSEurl).content
+LIBurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/Data/EUR3MTD156N.csv"
+LIBdownload = requests.get(LIBurl).content
 EUR_Libor = pd.read_csv(io.StringIO(LIBdownload.decode('utf-8')))
 
+EYurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/Data/EUR_YEN.csv"
+EYdownload = requests.get(EYurl).content
+euryen = pd.read_csv(io.StringIO(EYdownload.decode('utf-8')))
 
-# import data
-# assets:
-nikkei = pd.read_csv(r"/Users/connorstevens/Documents/GitHub/QFRM/NIKKEI_225.csv")
-jse = pd.read_csv(r"/Users/connorstevens/Documents/GitHub/QFRM/JSE_TOP40.csv")
-aex = pd.read_csv(r"/Users/connorstevens/Documents/GitHub/QFRM/AEX.csv")
-EUR_Libor = pd.read_csv(r"/Users/connorstevens/Documents/GitHub/QFRM/EUR3MTD156N.csv")
+EZurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/Data/EUR_ZAR.csv"
+EZdownload = requests.get(EZurl).content
+eurzar = pd.read_csv(io.StringIO(EZdownload.decode('utf-8')))
+
 #jse['Last'] = pd.to_numeric(jse['Last'])
 
 
