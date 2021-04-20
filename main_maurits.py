@@ -34,7 +34,7 @@ AEXurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/Data/AEX.csv"
 AEXdownload = requests.get(AEXurl).content
 aex = pd.read_csv(io.StringIO(AEXdownload.decode('utf-8')))
 
-LIBurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/Data/EUR3MTD156N.csv"
+LIBurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/Data/EUR3MTD156N_YMD.csv"
 LIBdownload = requests.get(LIBurl).content
 EUR_Libor = pd.read_csv(io.StringIO(LIBdownload.decode('utf-8')))
 
@@ -57,13 +57,13 @@ aex['Date'] = pd.to_datetime(aex['Date'])
 nikkei['Date2'] = nikkei['Date']
 jse['Date2'] = jse['Date']
 aex['Date2'] = aex['Date']
-
 euryen['Date'] = pd.to_datetime(euryen['Date'])
 eurzar['Date'] = pd.to_datetime(eurzar['Date'])
 euryen.set_index('Date', inplace=True)
 eurzar.set_index('Date', inplace=True)
 
-dates = nikkei['Date']
+dates = pd.date_range(start = "2011-03-01", end = "2021-03-01", freq="D")
+#nikkei['Date']
 
 nikkei.set_index('Date', inplace=True)
 jse.set_index('Date', inplace=True)
@@ -79,19 +79,30 @@ nikkei = pd.DataFrame(
         {'n_price': np.array(nikkei['price_eur']),
          'Date': np.array(nikkei['Date2'])
                 })
+
+
+#nikkei['Date'] = pd.to_datetime(nikkei['Date']).dt.date
+
 jse = pd.DataFrame(
         {'j_price': np.array(jse['price_eur']), 
          'Date': np.array(jse['Date2'])
                 })
+
+#jse['Date'] = pd.to_datetime(jse['Date']).dt.date
+
+
 aex = pd.DataFrame(
         {'a_price': np.array(aex['Price']),
          'Date': np.array(aex['Date2'])
                 })
 
+#aex['Date'] = pd.to_datetime(aex['Date']).dt.date
+
 nikkei.set_index('Date', inplace=True) # kind of roundaboutish and hacky but
 jse.set_index('Date', inplace=True)    # I just want this to run properly now
 aex.set_index('Date', inplace=True) 
 
+EUR_Libor['Date'] = pd.to_datetime(EUR_Libor['Date'], format = "%Y/%m/%d %H:%M:%S")
 EUR_Libor.set_index('Date', inplace = True)
 EUR_Libor = EUR_Libor.rename(columns = {'EUR3MTD156N': '3M_EUR_Libor'})
 EUR_Libor['3M_EUR_Libor'] = (pd.to_numeric(EUR_Libor['3M_EUR_Libor'], errors='coerce'))/100 #Was in percent.
