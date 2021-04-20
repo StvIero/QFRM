@@ -10,6 +10,7 @@ Created on Fri Apr  2 13:38:06 2021
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 # variable specification:
 abs_weights = [10, 10, 10]
