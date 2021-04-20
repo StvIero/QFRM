@@ -20,7 +20,7 @@ abs_weights = [10, 10, 10]
 rel_weights = [abs_weights[0]/sum(abs_weights), abs_weights[1]/sum(abs_weights), abs_weights[2]/sum(abs_weights)]
 
 
-#import data
+##import data.
 #Pull csv from GitHub so we dont have to keep changing directories and file paths.
 Nikurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/Data/NIKKEI_225.csv"
 Nikdownload = requests.get(Nikurl).content
@@ -38,6 +38,7 @@ LIBurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/Data/EUR3MTD156N.csv"
 LIBdownload = requests.get(LIBurl).content
 EUR_Libor = pd.read_csv(io.StringIO(LIBdownload.decode('utf-8')))
 
+#FX rates.
 EYurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/Data/EUR_YEN.csv"
 EYdownload = requests.get(EYurl).content
 euryen = pd.read_csv(io.StringIO(EYdownload.decode('utf-8')))
@@ -47,12 +48,6 @@ EZdownload = requests.get(EZurl).content
 eurzar = pd.read_csv(io.StringIO(EZdownload.decode('utf-8')))
 
 #jse['Last'] = pd.to_numeric(jse['Last'])
-
-
-# fx:
-euryen = pd.read_csv(r"/Users/connorstevens/Documents/GitHub/QFRM/EUR_YEN.csv")
-eurzar = pd.read_csv(r"/Users/connorstevens/Documents/GitHub/QFRM/EUR_ZAR.csv")
-
 # debt:
 
 # change dates to datetime, trim and set datetime as index:
@@ -96,7 +91,8 @@ aex = pd.DataFrame(
 nikkei.set_index('Date', inplace=True) # kind of roundaboutish and hacky but
 jse.set_index('Date', inplace=True)    # I just want this to run properly now
 aex.set_index('Date', inplace=True) 
-EUR_Libor.set_index('DATE', inplace = True)
+
+EUR_Libor.set_index('Date', inplace = True)
 EUR_Libor = EUR_Libor.rename(columns = {'EUR3MTD156N': '3M_EUR_Libor'})
 EUR_Libor['3M_EUR_Libor'] = (pd.to_numeric(EUR_Libor['3M_EUR_Libor'], errors='coerce'))/100 #Was in percent.
 #Function to replace '.' observations with average of previous and subsequent observations.
