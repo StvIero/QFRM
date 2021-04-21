@@ -151,26 +151,39 @@ df['jse_ret'] = np.log(df.jse_eur) - np.log(df.jse_eur.shift(1))
 df['nikkei_ret'] = np.log(df.nikkei_eur) - np.log(df.nikkei_eur.shift(1))
 df['aex_ret'] = np.log(df.aex) - np.log(df.aex.shift(1))
 
+
+
 """
-Think that is all we need to calculate the portfolio losses, delete this comment if you think thats fine, add comment if you think something is missing. I would like to save this code and do our actual calculations in another file.
+Rebalancing Code:
+----------------
+100m euros:
+    50m cash
+    50m debt
+
+Weights: Relative
+    40% AEX
+    40% Nikkei
+    20% JSE
+    
 """
+initial_val = 100_000_000
+debt_weight = 0.5
+debt_val = initial_val * debt_weight
+aex_weight = 0.4
+nikkei_weight = 0.4
+jse_weight = 0.2
 
 
-# still need to get:
-# - from eur prices get returns
-# - get some sort of debt
-# - get portfoliowide return...
+
+df_rebalancing = pd.DataFrame({'aex_units': np.zeros(np.shape(df)[0]),
+                               'nikkei_units': np.zeros(np.shape(df)[0]),
+                               'jse_units': np.zeros(np.shape(df)[0]),
+                               'aex_pos_val': np.zeros(np.shape(df)[0]),
+                               'nikkei_pos_val': np.zeros(np.shape(df)[0]),
+                               'jse_pos_value': np.zeros(np.shape(df)[0]),
+                               'port_val': np.zeros(np.shape(df)[0])})
 
 
-df['Vt nikkei'] = abs_weights[0]*df['n_price']
-df['Vt jse'] = abs_weights[1]*df['j_price']
-df['Vt aex'] = abs_weights[2]*df['a_price']
-
-df['Vt'] = df['Vt nikkei'] + df['Vt jse'] + df['Vt aex']
-df['Vt_ret'] = np.log(df.Vt) - np.log(df.Vt.shift(1))
-df['nik_ret'] = np.log(df.n_price) - np.log(df.n_price.shift(1))
-df['jse_ret'] = np.log(df.j_price) - np.log(df.j_price.shift(1))
-df['aex_ret'] = np.log(df.a_price) - np.log(df.a_price.shift(1))
 
 
 ###############################################################################
