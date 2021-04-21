@@ -54,9 +54,9 @@ eurzar = pd.read_csv(io.StringIO(EZdownload.decode('utf-8')))
 nikkei['Date'] = pd.to_datetime(nikkei['Date'])
 jse['Date'] = pd.to_datetime(jse['Date'])
 aex['Date'] = pd.to_datetime(aex['Date'])
-nikkei['Date2'] = nikkei['Date']
-jse['Date2'] = jse['Date']
-aex['Date2'] = aex['Date']
+# nikkei['Date2'] = nikkei['Date']
+# jse['Date2'] = jse['Date']
+# aex['Date2'] = aex['Date']
 euryen['Date'] = pd.to_datetime(euryen['Date'])
 eurzar['Date'] = pd.to_datetime(eurzar['Date'])
 euryen.set_index('Date', inplace=True)
@@ -69,43 +69,50 @@ nikkei.set_index('Date', inplace=True)
 jse.set_index('Date', inplace=True)
 aex.set_index('Date', inplace=True)
 
-nikkei = pd.merge(nikkei, euryen, left_index=True, right_index=True)
-jse = pd.merge(jse, eurzar, left_index=True, right_index=True)
+# nikkei = pd.merge(nikkei, euryen, left_index=True, right_index=True)
+# jse = pd.merge(jse, eurzar, left_index=True, right_index=True)
 
-nikkei['price_eur'] = nikkei['Price']*nikkei['Mid']
-jse['price_eur'] = jse['Last']*jse['Mid']
+# nikkei['price_eur'] = nikkei['Price']*nikkei['Mid']
+# jse['price_eur'] = jse['Last']*jse['Mid']
 
-nikkei = pd.DataFrame(
-        {'n_price': np.array(nikkei['price_eur']),
-         'Date': np.array(nikkei['Date2'])
-                })
-
-
-#nikkei['Date'] = pd.to_datetime(nikkei['Date']).dt.date
-
-jse = pd.DataFrame(
-        {'j_price': np.array(jse['price_eur']), 
-         'Date': np.array(jse['Date2'])
-                })
-
-#jse['Date'] = pd.to_datetime(jse['Date']).dt.date
+# nikkei = pd.DataFrame(
+#         {'n_price': np.array(nikkei['price_eur']),
+#          'Date': np.array(nikkei['Date2'])
+#                 })
 
 
-aex = pd.DataFrame(
-        {'a_price': np.array(aex['Price']),
-         'Date': np.array(aex['Date2'])
-                })
+# #nikkei['Date'] = pd.to_datetime(nikkei['Date']).dt.date
 
-#aex['Date'] = pd.to_datetime(aex['Date']).dt.date
+# jse = pd.DataFrame(
+#         {'j_price': np.array(jse['price_eur']), 
+#          'Date': np.array(jse['Date2'])
+#                 })
 
-nikkei.set_index('Date', inplace=True) # kind of roundaboutish and hacky but
-jse.set_index('Date', inplace=True)    # I just want this to run properly now
-aex.set_index('Date', inplace=True) 
+# #jse['Date'] = pd.to_datetime(jse['Date']).dt.date
 
+
+# aex = pd.DataFrame(
+#         {'a_price': np.array(aex['Price']),
+#          'Date': np.array(aex['Date2'])
+#                 })
+
+# #aex['Date'] = pd.to_datetime(aex['Date']).dt.date
+
+# nikkei.set_index('Date', inplace=True) # kind of roundaboutish and hacky but
+# jse.set_index('Date', inplace=True)    # I just want this to run properly now
+# aex.set_index('Date', inplace=True) 
+
+#Change libor data date format to match others for merge later.
 EUR_Libor['Date'] = pd.to_datetime(EUR_Libor['Date'], format = "%Y/%m/%d %H:%M:%S")
 EUR_Libor.set_index('Date', inplace = True)
+
+#Rename column to something more self-explanatory.
 EUR_Libor = EUR_Libor.rename(columns = {'EUR3MTD156N': '3M_EUR_Libor'})
+
+#Change to numeric, was importing as a string.
 EUR_Libor['3M_EUR_Libor'] = (pd.to_numeric(EUR_Libor['3M_EUR_Libor'], errors='coerce'))/100 #Was in percent.
+
+
 #Function to replace '.' observations with average of previous and subsequent observations.
 EUR_Libor['3M_EUR_Libor'] = EUR_Libor['3M_EUR_Libor'].interpolate(method = 'linear', axis = 0)
 
@@ -117,19 +124,29 @@ df['Date'] = dates
 df.set_index('Date', inplace=True)
 
 #Merge all dataframes together.
-df = pd.merge(df, nikkei, left_index = True, right_index = True)
-df = pd.merge(df, jse, left_index = True, right_index = True)
-df = pd.merge(df, aex, left_index = True, right_index = True)
-df = pd.merge(df, EUR_Libor, left_index = True, right_index = True)
-df = pd.merge(df, euryen['Bid'], left_index = True, right_index = True)
-df = pd.merge(df, eurzar['Bid'], left_index = True, right_index = True)
+df = pd.merge(df, nikkei['Price'], left_index = True, right_index = True)#Price :10754
+df = pd.merge(df, jse['Last'], left_index = True, right_index = True)#Last
+df = pd.merge(df, aex['Price'], left_index = True, right_index = True)# Price_y
+df = pd.merge(df, EUR_Libor, left_index = True, right_index = True)# 3M_EUR_Libor
+df = pd.merge(df, euryen['Bid'], left_index = True, right_index = True)#
+df = pd.merge(df, eurzar['Bid'], left_index = True, right_index = True)#
 
 #Change column names to distinguish between bid prices.
+df = df.rename(columns = {'Price_x': 'nikkei'})
+df = df.rename(columns = {'Last': 'jse'})
+df = df.rename(columns = {'Price_y': 'aex'})
+df = df.rename(columns = {'3M_EUR_Libor': 'libor'})
 df = df.rename(columns = {'Bid_x': 'euryen_bid'})
 df = df.rename(columns = {'Bid_y': 'eurzar_bid'})
 
 #Fill in missing values.
 df = df.ffill(axis=0)
+
+
+
+#Get foreign prices in euros.
+df['jse_eur'] = df['jse'] * df['eurzar_bid']
+df['nikkei_eur'] = df['nikkei'] * df['euryen_bid']
 
 
 
