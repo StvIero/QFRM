@@ -166,7 +166,7 @@ Weights: Relative
     20% JSE
     
 """
-initial_val = 100_000_000
+initial_val = 100000000
 debt_weight = 0.5
 debt_val = initial_val * debt_weight
 aex_weight = 0.4
@@ -174,34 +174,48 @@ nikkei_weight = 0.4
 jse_weight = 0.2
 
 
+#Create dataframe to store data used for rebalancing calculations.
+df_re = pd.DataFrame({'aex_units': np.zeros(np.shape(df)[0] + 1),
+                               'nikkei_units': np.zeros(np.shape(df)[0] + 1),
+                               'jse_units': np.zeros(np.shape(df)[0] + 1),
+                               'aex_pos_val': np.zeros(np.shape(df)[0] + 1),
+                               'nikkei_pos_val': np.zeros(np.shape(df)[0] + 1),
+                               'jse_pos_val': np.zeros(np.shape(df)[0] + 1),
+                               'equity_val': np.zeros(np.shape(df)[0] + 1)})
 
-df_rebalancing = pd.DataFrame({'aex_units': np.zeros(np.shape(df)[0]),
-                               'nikkei_units': np.zeros(np.shape(df)[0]),
-                               'jse_units': np.zeros(np.shape(df)[0]),
-                               'aex_pos_val': np.zeros(np.shape(df)[0]),
-                               'nikkei_pos_val': np.zeros(np.shape(df)[0]),
-                               'jse_pos_value': np.zeros(np.shape(df)[0]),
-                               'port_val': np.zeros(np.shape(df)[0])})
+#Variables to reference units, position, price columns and weights.
+units = ['aex_units', 'nikkei_units', 'jse_units']
+position = ['aex_pos_val', 'nikkei_pos_val', 'jse_pos_value']
+weights = np.array([0.4, 0.4, 0.2])
+prices = ['aex', 'nikkei_eur', 'jse_eur']
 
+#Set up initial portfolio positions.
+df_re.loc[0: 1, 'aex_units'] = initial_val * aex_weight / df['aex'][0]
+df_re.loc[0, 'aex_pos_val'] = aex_weight * initial_val
 
+df_re.loc[0: 1, 'nikkei_units'] = initial_val * nikkei_weight / df['nikkei_eur'][0]
+df_re.loc[0, 'nikkei_pos_val'] = nikkei_weight * initial_val
 
+df_re.loc[0: 1, 'jse_units'] = initial_val * jse_weight / df['jse_eur'][0]
+df_re.loc[0, 'jse_pos_val'] = jse_weight * initial_val
 
-###############################################################################
-# actual assignment part
-###############################################################################
-df = df.iloc[1:]
+df_re.loc[0:1, 'equity_val'] = np.sum(df_re.iloc[0, 3:6])
 
-# var-covar on multivariate normal dist:
-wvol_n = rel_weights[0]**2 * np.std(df.nik_ret) 
-wvol_j = rel_weights[1]**2 * np.std(df.jse_ret) 
-wvol_a = rel_weights[2]**2 * np.std(df.aex_ret) 
+####Rebalancing loop.
 
-wcov_nj = rel_weights[0]*rel_weights[1]*np.cov(df.nik_ret, df.jse_ret)[0,1]
-wcov_na = rel_weights[0]*rel_weights[2]*np.cov(df.nik_ret, df.aex_ret)[0,1]
-wcov_ja = rel_weights[1]*rel_weights[2]*np.cov(df.jse_ret, df.aex_ret)[0,1]
+#Calculate position values.
+df_re.loc[1, 'aex_pos_val'] = df['aex'][1] * df_re['aex_units'][1]
+df_re.loc[1, 'nikkei_pos_val'] = df['nikkei_eur'][1] * df_re['nikkei_units'][1]
+df_re.loc[1, 'jse_pos_val'] = df['jse_eur'][1] * df_re['jse_units'][1]
 
+df_re.loc[1, 'equity_val'] = np.sum(df_re.iloc[1, 3:6])
 
+###Calculate new unit numbers due to rebalancing.
 
+#Calculate new number of units by dividing previous  weight of previous portfolio value by new price.
+df_re.loc[1, 'aex_units'] = df_re.loc[1, 'equity_val'] * aex_weight / df['aex'][1]
+df_re.loc[1, 'nikkei_units'] = df_re.loc[1, 'equity_val'] * nikkei_weight / df['nikkei_eur'][1]
+df_re.loc[1, 'jse_units'] = df_re.loc[1, 'equity_val'] * jse_weight / df['jse_eur'][1]
 
 
 
