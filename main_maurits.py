@@ -147,7 +147,13 @@ df = df.ffill(axis=0)
 #Get foreign prices in euros.
 df['jse_eur'] = df['jse'] * df['eurzar_bid']
 df['nikkei_eur'] = df['nikkei'] * df['euryen_bid']
+df['jse_ret'] = np.log(df.jse_eur) - np.log(df.jse_eur.shift(1))
+df['nikkei_ret'] = np.log(df.nikkei_eur) - np.log(df.nikkei_eur.shift(1))
+df['aex_ret'] = np.log(df.aex) - np.log(df.aex.shift(1))
 
+"""
+Think that is all we need to calculate the portfolio losses, delete this comment if you think thats fine, add comment if you think something is missing. I would like to save this code and do our actual calculations in another file.
+"""
 
 
 # still need to get:
