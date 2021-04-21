@@ -47,60 +47,24 @@ EZurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/Data/EUR_ZAR.csv"
 EZdownload = requests.get(EZurl).content
 eurzar = pd.read_csv(io.StringIO(EZdownload.decode('utf-8')))
 
-#jse['Last'] = pd.to_numeric(jse['Last'])
-# debt:
 
-# change dates to datetime, trim and set datetime as index:
+
+# change dates to datetime.
 nikkei['Date'] = pd.to_datetime(nikkei['Date'])
 jse['Date'] = pd.to_datetime(jse['Date'])
 aex['Date'] = pd.to_datetime(aex['Date'])
-# nikkei['Date2'] = nikkei['Date']
-# jse['Date2'] = jse['Date']
-# aex['Date2'] = aex['Date']
 euryen['Date'] = pd.to_datetime(euryen['Date'])
 eurzar['Date'] = pd.to_datetime(eurzar['Date'])
-euryen.set_index('Date', inplace=True)
-eurzar.set_index('Date', inplace=True)
 
+#Create data series to reference in dataframe creation later.
 dates = pd.date_range(start = "2011-03-01", end = "2021-03-01", freq="D")
-#nikkei['Date']
 
+#Set date as index
 nikkei.set_index('Date', inplace=True)
 jse.set_index('Date', inplace=True)
 aex.set_index('Date', inplace=True)
-
-# nikkei = pd.merge(nikkei, euryen, left_index=True, right_index=True)
-# jse = pd.merge(jse, eurzar, left_index=True, right_index=True)
-
-# nikkei['price_eur'] = nikkei['Price']*nikkei['Mid']
-# jse['price_eur'] = jse['Last']*jse['Mid']
-
-# nikkei = pd.DataFrame(
-#         {'n_price': np.array(nikkei['price_eur']),
-#          'Date': np.array(nikkei['Date2'])
-#                 })
-
-
-# #nikkei['Date'] = pd.to_datetime(nikkei['Date']).dt.date
-
-# jse = pd.DataFrame(
-#         {'j_price': np.array(jse['price_eur']), 
-#          'Date': np.array(jse['Date2'])
-#                 })
-
-# #jse['Date'] = pd.to_datetime(jse['Date']).dt.date
-
-
-# aex = pd.DataFrame(
-#         {'a_price': np.array(aex['Price']),
-#          'Date': np.array(aex['Date2'])
-#                 })
-
-# #aex['Date'] = pd.to_datetime(aex['Date']).dt.date
-
-# nikkei.set_index('Date', inplace=True) # kind of roundaboutish and hacky but
-# jse.set_index('Date', inplace=True)    # I just want this to run properly now
-# aex.set_index('Date', inplace=True) 
+euryen.set_index('Date', inplace=True)
+eurzar.set_index('Date', inplace=True)
 
 #Change libor data date format to match others for merge later.
 EUR_Libor['Date'] = pd.to_datetime(EUR_Libor['Date'], format = "%Y/%m/%d %H:%M:%S")
@@ -213,12 +177,12 @@ df_re.loc[1, 'equity_val'] = np.sum(df_re.iloc[1, 3:6])
 ###Calculate new unit numbers due to rebalancing.
 
 #Calculate new number of units by dividing previous  weight of previous portfolio value by new price.
-df_re.loc[1, 'aex_units'] = df_re.loc[1, 'equity_val'] * aex_weight / df['aex'][1]
-df_re.loc[1, 'nikkei_units'] = df_re.loc[1, 'equity_val'] * nikkei_weight / df['nikkei_eur'][1]
-df_re.loc[1, 'jse_units'] = df_re.loc[1, 'equity_val'] * jse_weight / df['jse_eur'][1]
+df_re.loc[2, 'aex_units'] = df_re.loc[1, 'equity_val'] * aex_weight / df['aex'][1]
+df_re.loc[2, 'nikkei_units'] = df_re.loc[1, 'equity_val'] * nikkei_weight / df['nikkei_eur'][1]
+df_re.loc[2, 'jse_units'] = df_re.loc[1, 'equity_val'] * jse_weight / df['jse_eur'][1]
 
 
-
+test
 
 
 
