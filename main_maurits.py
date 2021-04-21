@@ -163,28 +163,45 @@ df_re.loc[0, 'nikkei_pos_val'] = nikkei_weight * initial_val
 df_re.loc[0: 1, 'jse_units'] = initial_val * jse_weight / df['jse_eur'][0]
 df_re.loc[0, 'jse_pos_val'] = jse_weight * initial_val
 
-df_re.loc[0:1, 'equity_val'] = np.sum(df_re.iloc[0, 3:6])
+df_re.loc[0, 'equity_val'] = np.sum(df_re.iloc[0, 3:6])
 
 ####Rebalancing loop.
 
+for i in range(1, np.shape(df_re)[0] - 1):
 #Calculate position values.
-df_re.loc[1, 'aex_pos_val'] = df['aex'][1] * df_re['aex_units'][1]
-df_re.loc[1, 'nikkei_pos_val'] = df['nikkei_eur'][1] * df_re['nikkei_units'][1]
-df_re.loc[1, 'jse_pos_val'] = df['jse_eur'][1] * df_re['jse_units'][1]
+    df_re.loc[i, 'aex_pos_val'] = df['aex'][i] * df_re['aex_units'][i]
+    df_re.loc[i, 'nikkei_pos_val'] = df['nikkei_eur'][i] * df_re['nikkei_units'][i]
+    df_re.loc[i, 'jse_pos_val'] = df['jse_eur'][i] * df_re['jse_units'][i]
 
-df_re.loc[1, 'equity_val'] = np.sum(df_re.iloc[1, 3:6])
+    df_re.loc[i, 'equity_val'] = np.sum(df_re.iloc[i, 3:6])
 
 ###Calculate new unit numbers due to rebalancing.
 
-#Calculate new number of units by dividing previous  weight of previous portfolio value by new price.
-df_re.loc[2, 'aex_units'] = df_re.loc[1, 'equity_val'] * aex_weight / df['aex'][1]
-df_re.loc[2, 'nikkei_units'] = df_re.loc[1, 'equity_val'] * nikkei_weight / df['nikkei_eur'][1]
-df_re.loc[2, 'jse_units'] = df_re.loc[1, 'equity_val'] * jse_weight / df['jse_eur'][1]
+    #Calculate new number of units by dividing previous  weight of previous portfolio value by new price.
+    df_re.loc[i + 1, 'aex_units'] = df_re.loc[i, 'equity_val'] * aex_weight / df['aex'][i-1]
+    df_re.loc[i + 1, 'nikkei_units'] = df_re.loc[i, 'equity_val'] * nikkei_weight / df['nikkei_eur'][i-1]
+    df_re.loc[i + 1, 'jse_units'] = df_re.loc[i, 'equity_val'] * jse_weight / df['jse_eur'][i-1]
 
+#Not ideal, but I had to do the last line this way to get it to work.
+df_re.iloc[-1, df_re.columns.get_loc('aex_pos_val')] = df.aex.iloc[-1] * df_re.aex_units.iloc[-1]
+df_re.iloc[-1, df_re.columns.get_loc('nikkei_pos_val')] = df.nikkei_eur.iloc[-1] * df_re.nikkei_units.iloc[-1]
+df_re.iloc[-1, df_re.columns.get_loc('jse_pos_val')] = df.jse_eur.iloc[-1] * df_re.jse_units.iloc[-1]
 
-test
+index_aex = df_re.columns.get_loc('aex_pos_val')
+index_nikkei = df_re.columns.get_loc('nikkei_pos_val')
+index_jse = df_re.columns.get_loc('jse_pos_val')
 
+df_re.iloc[-1, -1] = np.sum(df_re.iloc[-1, [index_aex, index_nikkei, index_jse]])
 
+plt.scatter(df.aex, df_re.aex_pos_val[1:])
+plt.show()
+
+plt.plot(df_re.aex_pos_val, label = 'aex')
+plt.plot(df_re.jse_pos_val, label = 'jse')
+plt.plot(df_re.nikkei_pos_val, label = 'nikkei', alpha = 0.5)
+plt.plot(df_re.equity_val, label = 'equity')
+plt.legend()
+plt.show()
 
 
 
