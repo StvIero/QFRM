@@ -137,6 +137,14 @@ aex_weight = 0.4
 nikkei_weight = 0.4
 jse_weight = 0.2
 
+##Add debt into df.
+
+#Change in euro libor rate.
+df['libor_change'] = df.libor - df.libor.shift(1)
+
+#Calculate losses due to changes in libor rate.
+#df['debt_return'] =
+
 
 #Create dataframe to store data used for rebalancing calculations.
 df_re = pd.DataFrame({'aex_units': np.zeros(np.shape(df)[0] + 1),
@@ -178,9 +186,9 @@ for i in range(1, np.shape(df_re)[0] - 1):
 ###Calculate new unit numbers due to rebalancing.
 
     #Calculate new number of units by dividing previous  weight of previous portfolio value by new price.
-    df_re.loc[i + 1, 'aex_units'] = df_re.loc[i, 'equity_val'] * aex_weight / df['aex'][i-1]
-    df_re.loc[i + 1, 'nikkei_units'] = df_re.loc[i, 'equity_val'] * nikkei_weight / df['nikkei_eur'][i-1]
-    df_re.loc[i + 1, 'jse_units'] = df_re.loc[i, 'equity_val'] * jse_weight / df['jse_eur'][i-1]
+    df_re.loc[i + 1, 'aex_units'] = df_re.loc[i, 'equity_val'] * aex_weight / df['aex'][i]
+    df_re.loc[i + 1, 'nikkei_units'] = df_re.loc[i, 'equity_val'] * nikkei_weight / df['nikkei_eur'][i]
+    df_re.loc[i + 1, 'jse_units'] = df_re.loc[i, 'equity_val'] * jse_weight / df['jse_eur'][i]
 
 #Not ideal, but I had to do the last line this way to get it to work.
 df_re.iloc[-1, df_re.columns.get_loc('aex_pos_val')] = df.aex.iloc[-1] * df_re.aex_units.iloc[-1]
@@ -193,23 +201,35 @@ index_jse = df_re.columns.get_loc('jse_pos_val')
 
 df_re.iloc[-1, -1] = np.sum(df_re.iloc[-1, [index_aex, index_nikkei, index_jse]])
 
+#Add equity_val to df. First line exluded because used as a starting point for positons.
+df['equity_val'] = np.array(df_re.loc[1:, 'equity_val'])
+
+#Calculate equity returns.
+df['equity_ret'] = np.log(df.equity_val) - np.log(df.equity_val.shift(1))
+
 plt.scatter(df.aex, df_re.aex_pos_val[1:])
 plt.show()
 
 plt.plot(df_re.aex_pos_val, label = 'aex')
 plt.plot(df_re.jse_pos_val, label = 'jse')
-plt.plot(df_re.nikkei_pos_val, label = 'nikkei', alpha = 0.5)
+plt.plot(df_re.nikkei_pos_val, label = 'nikkei', alpha = 0.3)
 plt.plot(df_re.equity_val, label = 'equity')
+plt.legend()
+plt.show()
+
+plt.plot(df.aex_ret, label = 'aex', alpha = 0.5)
+plt.plot(df.jse_ret, label = 'jse', alpha = 0.5)
+plt.plot(df.nikkei_ret, label = 'nikkei', alpha = 0.3)
+#plt.plot(df.equity_ret, label = 'equity')
 plt.legend()
 plt.show()
 
 
 
+np.corrcoef(df.nikkei_eur, df.aex)
+np.corrcoef(df.nikkei, df.aex)
 
-
-
-
-
+np.corrcoef(df.nikkei_ret[1:], df.aex_ret[1:])
 
 
 
