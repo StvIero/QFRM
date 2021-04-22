@@ -13,31 +13,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import norm
 from scipy.stats import t
+import statsmodels.api as sm
 #These two are for importing csv from github, will need to install requests, io is installed by default.
 import requests
 import io
-
-def ST_VAR_ES(nu, SD_port):
-    sigma = SD_port / np.sqrt(nu/(nu-2))
-    VaR975 = average_port_ret - t.ppf(0.025, nu, 0, 1)
-    VaR990 = average_port_ret - t.ppf(0.01, nu, 0, 1)
-    
-    frac11 = (nu+(t.ppf(0.025, nu, 0, 1))**2)/(nu-1)
-    frac12 = t.pdf(t.ppf(0.025, nu, 0, 1), nu, 0, 1)/(0.025)
-    ES975 = (average_port_ret - sigma*frac11*frac12)*port_value
-    
-    frac21 = (nu+(t.ppf(0.01, nu, 0, 1))**2)/(nu-1)
-    frac22 = t.pdf(t.ppf(0.01, nu, 0, 1), nu, 0, 1)/(0.01)
-    ES990 = (average_port_ret - sigma*frac21*frac22)*port_value
-    
-    print('97.5% VaR is', VaR975)
-    print('99.0% VaR is', VaR990)
-    print('')
-    print('97.5% ES is', ES975)
-    print('99.0% ES is', ES990)
-    
-    return
-
 
 # variable specification:
 abs_weights = [40, 40, 20]
@@ -151,44 +130,125 @@ Rebalancing Code:
 100m euros:
     50m cash
     50m debt
-
 Weights: Relative
     40% AEX
     40% Nikkei
     20% JSE
     
 """
-initial_val = 100_000_000
+initial_val = 100000000
 debt_weight = 0.5
 debt_val = initial_val * debt_weight
 aex_weight = 0.4
 nikkei_weight = 0.4
 jse_weight = 0.2
 
+##Add debt into df.
 
-<<<<<<< Updated upstream
-=======
-# still need to get:
-# - get portfoliowide return...
->>>>>>> Stashed changes
+#Change in euro libor rate.
+df['libor_change'] = df.libor - df.libor.shift(1)
 
-df_rebalancing = pd.DataFrame({'aex_units': np.zeros(np.shape(df)[0]),
-                               'nikkei_units': np.zeros(np.shape(df)[0]),
-                               'jse_units': np.zeros(np.shape(df)[0]),
-                               'aex_pos_val': np.zeros(np.shape(df)[0]),
-                               'nikkei_pos_val': np.zeros(np.shape(df)[0]),
-                               'jse_pos_value': np.zeros(np.shape(df)[0]),
-                               'port_val': np.zeros(np.shape(df)[0])})
-
-<<<<<<< Updated upstream
+#Calculate losses due to changes in libor rate.
+#df['debt_return'] =
 
 
-=======
->>>>>>> Stashed changes
+#Create dataframe to store data used for rebalancing calculations.
+df_re = pd.DataFrame({'aex_units': np.zeros(np.shape(df)[0] + 1),
+                               'nikkei_units': np.zeros(np.shape(df)[0] + 1),
+                               'jse_units': np.zeros(np.shape(df)[0] + 1),
+                               'aex_pos_val': np.zeros(np.shape(df)[0] + 1),
+                               'nikkei_pos_val': np.zeros(np.shape(df)[0] + 1),
+                               'jse_pos_val': np.zeros(np.shape(df)[0] + 1),
+                               'equity_val': np.zeros(np.shape(df)[0] + 1)})
 
+#Variables to reference units, position, price columns and weights.
+units = ['aex_units', 'nikkei_units', 'jse_units']
+position = ['aex_pos_val', 'nikkei_pos_val', 'jse_pos_value']
+weights = np.array([0.4, 0.4, 0.2])
+prices = ['aex', 'nikkei_eur', 'jse_eur']
+
+#Set up initial portfolio positions.
+df_re.loc[0: 1, 'aex_units'] = initial_val * aex_weight / df['aex'][0]
+df_re.loc[0, 'aex_pos_val'] = aex_weight * initial_val
+
+df_re.loc[0: 1, 'nikkei_units'] = initial_val * nikkei_weight / df['nikkei_eur'][0]
+df_re.loc[0, 'nikkei_pos_val'] = nikkei_weight * initial_val
+
+df_re.loc[0: 1, 'jse_units'] = initial_val * jse_weight / df['jse_eur'][0]
+df_re.loc[0, 'jse_pos_val'] = jse_weight * initial_val
+
+df_re.loc[0, 'equity_val'] = np.sum(df_re.iloc[0, 3:6])
+
+####Rebalancing loop.
+
+for i in range(1, np.shape(df_re)[0] - 1):
+#Calculate position values.
+    df_re.loc[i, 'aex_pos_val'] = df['aex'][i] * df_re['aex_units'][i]
+    df_re.loc[i, 'nikkei_pos_val'] = df['nikkei_eur'][i] * df_re['nikkei_units'][i]
+    df_re.loc[i, 'jse_pos_val'] = df['jse_eur'][i] * df_re['jse_units'][i]
+
+    df_re.loc[i, 'equity_val'] = np.sum(df_re.iloc[i, 3:6])
+
+###Calculate new unit numbers due to rebalancing.
+
+    #Calculate new number of units by dividing previous  weight of previous portfolio value by new price.
+    df_re.loc[i + 1, 'aex_units'] = df_re.loc[i, 'equity_val'] * aex_weight / df['aex'][i]
+    df_re.loc[i + 1, 'nikkei_units'] = df_re.loc[i, 'equity_val'] * nikkei_weight / df['nikkei_eur'][i]
+    df_re.loc[i + 1, 'jse_units'] = df_re.loc[i, 'equity_val'] * jse_weight / df['jse_eur'][i]
+
+#Not ideal, but I had to do the last line this way to get it to work.
+df_re.iloc[-1, df_re.columns.get_loc('aex_pos_val')] = df.aex.iloc[-1] * df_re.aex_units.iloc[-1]
+df_re.iloc[-1, df_re.columns.get_loc('nikkei_pos_val')] = df.nikkei_eur.iloc[-1] * df_re.nikkei_units.iloc[-1]
+df_re.iloc[-1, df_re.columns.get_loc('jse_pos_val')] = df.jse_eur.iloc[-1] * df_re.jse_units.iloc[-1]
+
+index_aex = df_re.columns.get_loc('aex_pos_val')
+index_nikkei = df_re.columns.get_loc('nikkei_pos_val')
+index_jse = df_re.columns.get_loc('jse_pos_val')
+
+df_re.iloc[-1, -1] = np.sum(df_re.iloc[-1, [index_aex, index_nikkei, index_jse]])
+
+#Add equity_val to df. First line exluded because used as a starting point for positons.
+df['equity_val'] = np.array(df_re.loc[1:, 'equity_val'])
+
+#Calculate equity returns.
+df['equity_ret'] = np.log(df.equity_val) - np.log(df.equity_val.shift(1))
+
+
+"""
+End of rebalancing code
+"""
+
+
+
+"""
 ###############################################################################
 # actual assignment part
 ###############################################################################
+"""
+
+def ST_VAR_ES(nu, SD_port):
+    sigma = SD_port / np.sqrt(nu/(nu-2))
+    VaR975 = (average_port_ret + t.ppf(0.025, nu, 0, 1)*sigma)*port_value*-1
+    VaR990 = (average_port_ret + t.ppf(0.01, nu, 0, 1)*sigma)*port_value*-1
+    
+    frac11 = (nu+(t.ppf(0.025, nu, 0, 1))**2)/(nu-1)
+    frac12 = t.pdf(t.ppf(0.025, nu, 0, 1), nu, 0, 1)/(0.025)
+    ES975 = (average_port_ret - sigma*frac11*frac12)*port_value*-1
+    
+    frac21 = (nu+(t.ppf(0.01, nu, 0, 1))**2)/(nu-1)
+    frac22 = t.pdf(t.ppf(0.01, nu, 0, 1), nu, 0, 1)/(0.01)
+    ES990 = (average_port_ret - sigma*frac21*frac22)*port_value*-1
+
+    print('97.5% VaR is', VaR975)
+    print('99.0% VaR is', VaR990)
+    print('')
+    print('97.5% ES is', ES975)
+    print('99.0% ES is', ES990)
+    print('')
+    print('')
+    
+    return
+
 df = df.iloc[1:]
 average_port_ret = np.mean(rel_weights[0]*df.nikkei_ret + rel_weights[1]*df.aex_ret + rel_weights[2]*df.jse_ret)
 
@@ -205,23 +265,26 @@ wcov_ja = rel_weights[1]*rel_weights[2]*np.cov(df.jse_ret, df.aex_ret)[0,1]
 vol_port = np.sqrt(wvol_a + wvol_j + wvol_n + wcov_nj + wcov_na + wcov_ja)
 
 # normal VaRs 
+print('Assuming rets are normal:')
 print('97.5% VaR is', (average_port_ret-1.96*vol_port)*port_value*-1) # 1,884,792
 print('99.0% VaR is', (average_port_ret -2.36*vol_port)*port_value*-1) #2,274,832
-
+print('')
 # normal ES's
 # ES formula = pdf(cdfinv(alpha))/(alpha) * sigma
 
 print('97.5% ES is', (average_port_ret*-1 + norm.pdf(norm.ppf(0.025))/(0.025) * vol_port) * port_value)
 print('99.0% ES is', (average_port_ret*-1 + norm.pdf(norm.ppf(0.01))/(0.01) * vol_port) * port_value)
-
+print('')
 
 # now for student t holmes:
 
+for i in [3,4,5,6]:
+    print('If nu =', i)
+    ST_VAR_ES(i, vol_port)
 
+# get QQ-plot
 
-
-
-
+sm.qqplot(df['equity_ret']/np.std(df['equity_ret']), line='45')
 
 
 
