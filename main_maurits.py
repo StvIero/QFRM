@@ -221,30 +221,7 @@ for i in range(1, np.shape(df)[0]):
 df['total_loss'] = df['equity_loss'] + df['debt_loss']
 df['total_loss'] = df['equity_loss'] + df['debt_loss']
 
-plt.scatter(df.aex, df_re.aex_pos_val[1:])
-plt.show()
-
-plt.plot(df_re.aex_pos_val, label = 'aex')
-plt.plot(df_re.jse_pos_val, label = 'jse')
-plt.plot(df_re.nikkei_pos_val, label = 'nikkei', alpha = 0.3)
-plt.plot(df_re.equity_val, label = 'equity')
-plt.legend()
-plt.show()
-
-plt.plot(df.aex_ret, label = 'aex', alpha = 0.5)
-plt.plot(df.jse_ret, label = 'jse', alpha = 0.5)
-plt.plot(df.nikkei_ret, label = 'nikkei', alpha = 0.3)
-#plt.plot(df.equity_ret, label = 'equity')
-plt.legend()
-plt.show()
-
-plt.plot(df['total_loss'])
-plt.show()
-
-np.corrcoef(df.nikkei_eur, df.aex)
-np.corrcoef(df.nikkei, df.aex)
-
-np.corrcoef(df.nikkei_ret[1:], df.aex_ret[1:])
+df.to_csv('/Users/connorstevens/Documents/GitHub/QFRM/Data/loss_df.csv')
 
 
 
