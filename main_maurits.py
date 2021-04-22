@@ -140,10 +140,10 @@ jse_weight = 0.2
 ##Add debt into df.
 
 #Change in euro libor rate.
-df['libor_change'] = df.libor - df.libor.shift(1)
+df['libor_change'] = (df.libor - df.libor.shift(1))/100
 
 #Calculate losses due to changes in libor rate.
-#df['debt_return'] =
+df['debt_loss'] = -(debt_val * (1 - np.exp(-df['libor_change']))) + (debt_val * df['libor'])/250
 
 
 #Create dataframe to store data used for rebalancing calculations.
@@ -207,6 +207,20 @@ df['equity_val'] = np.array(df_re.loc[1:, 'equity_val'])
 #Calculate equity returns.
 df['equity_ret'] = np.log(df.equity_val) - np.log(df.equity_val.shift(1))
 
+#Calculate equity losses.
+df['equity_loss'] = np.zeros(np.shape(df)[0])
+
+#First loss done manually.
+df.iloc[0, df.columns.get_loc('equity_loss')] = -(df.iloc[0, df.columns.get_loc('equity_val')] - initial_val)
+
+for i in range(1, np.shape(df)[0]):
+    df.iloc[i, df.columns.get_loc('equity_loss')] = -(df.iloc[i, df.columns.get_loc('equity_val')] - df.iloc[i - 1, df.columns.get_loc('equity_val')])
+
+
+#Daily portfolio losses.
+df['total_loss'] = df['equity_loss'] + df['debt_loss']
+df['total_loss'] = df['equity_loss'] + df['debt_loss']
+
 plt.scatter(df.aex, df_re.aex_pos_val[1:])
 plt.show()
 
@@ -224,7 +238,8 @@ plt.plot(df.nikkei_ret, label = 'nikkei', alpha = 0.3)
 plt.legend()
 plt.show()
 
-
+plt.plot(df['total_loss'])
+plt.show()
 
 np.corrcoef(df.nikkei_eur, df.aex)
 np.corrcoef(df.nikkei, df.aex)
