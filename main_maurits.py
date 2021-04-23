@@ -47,60 +47,24 @@ EZurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/Data/EUR_ZAR.csv"
 EZdownload = requests.get(EZurl).content
 eurzar = pd.read_csv(io.StringIO(EZdownload.decode('utf-8')))
 
-#jse['Last'] = pd.to_numeric(jse['Last'])
-# debt:
 
-# change dates to datetime, trim and set datetime as index:
+
+# change dates to datetime.
 nikkei['Date'] = pd.to_datetime(nikkei['Date'])
 jse['Date'] = pd.to_datetime(jse['Date'])
 aex['Date'] = pd.to_datetime(aex['Date'])
-# nikkei['Date2'] = nikkei['Date']
-# jse['Date2'] = jse['Date']
-# aex['Date2'] = aex['Date']
 euryen['Date'] = pd.to_datetime(euryen['Date'])
 eurzar['Date'] = pd.to_datetime(eurzar['Date'])
-euryen.set_index('Date', inplace=True)
-eurzar.set_index('Date', inplace=True)
 
+#Create data series to reference in dataframe creation later.
 dates = pd.date_range(start = "2011-03-01", end = "2021-03-01", freq="D")
-#nikkei['Date']
 
+#Set date as index
 nikkei.set_index('Date', inplace=True)
 jse.set_index('Date', inplace=True)
 aex.set_index('Date', inplace=True)
-
-# nikkei = pd.merge(nikkei, euryen, left_index=True, right_index=True)
-# jse = pd.merge(jse, eurzar, left_index=True, right_index=True)
-
-# nikkei['price_eur'] = nikkei['Price']*nikkei['Mid']
-# jse['price_eur'] = jse['Last']*jse['Mid']
-
-# nikkei = pd.DataFrame(
-#         {'n_price': np.array(nikkei['price_eur']),
-#          'Date': np.array(nikkei['Date2'])
-#                 })
-
-
-# #nikkei['Date'] = pd.to_datetime(nikkei['Date']).dt.date
-
-# jse = pd.DataFrame(
-#         {'j_price': np.array(jse['price_eur']), 
-#          'Date': np.array(jse['Date2'])
-#                 })
-
-# #jse['Date'] = pd.to_datetime(jse['Date']).dt.date
-
-
-# aex = pd.DataFrame(
-#         {'a_price': np.array(aex['Price']),
-#          'Date': np.array(aex['Date2'])
-#                 })
-
-# #aex['Date'] = pd.to_datetime(aex['Date']).dt.date
-
-# nikkei.set_index('Date', inplace=True) # kind of roundaboutish and hacky but
-# jse.set_index('Date', inplace=True)    # I just want this to run properly now
-# aex.set_index('Date', inplace=True) 
+euryen.set_index('Date', inplace=True)
+eurzar.set_index('Date', inplace=True)
 
 #Change libor data date format to match others for merge later.
 EUR_Libor['Date'] = pd.to_datetime(EUR_Libor['Date'], format = "%Y/%m/%d %H:%M:%S")
@@ -166,55 +130,98 @@ Weights: Relative
     20% JSE
     
 """
-initial_val = 100_000_000
+initial_val = 100000000
 debt_weight = 0.5
 debt_val = initial_val * debt_weight
 aex_weight = 0.4
 nikkei_weight = 0.4
 jse_weight = 0.2
 
+##Add debt into df.
+
+#Change in euro libor rate.
+df['libor_change'] = (df.libor - df.libor.shift(1))/100
+
+#Calculate losses due to changes in libor rate.
+df['debt_loss'] = -(debt_val * (1 - np.exp(-df['libor_change']))) + (debt_val * df['libor'])/250
 
 
-df_rebalancing = pd.DataFrame({'aex_units': np.zeros(np.shape(df)[0]),
-                               'nikkei_units': np.zeros(np.shape(df)[0]),
-                               'jse_units': np.zeros(np.shape(df)[0]),
-                               'aex_pos_val': np.zeros(np.shape(df)[0]),
-                               'nikkei_pos_val': np.zeros(np.shape(df)[0]),
-                               'jse_pos_value': np.zeros(np.shape(df)[0]),
-                               'port_val': np.zeros(np.shape(df)[0])})
+#Create dataframe to store data used for rebalancing calculations.
+df_re = pd.DataFrame({'aex_units': np.zeros(np.shape(df)[0] + 1),
+                               'nikkei_units': np.zeros(np.shape(df)[0] + 1),
+                               'jse_units': np.zeros(np.shape(df)[0] + 1),
+                               'aex_pos_val': np.zeros(np.shape(df)[0] + 1),
+                               'nikkei_pos_val': np.zeros(np.shape(df)[0] + 1),
+                               'jse_pos_val': np.zeros(np.shape(df)[0] + 1),
+                               'equity_val': np.zeros(np.shape(df)[0] + 1)})
+
+#Variables to reference units, position, price columns and weights.
+units = ['aex_units', 'nikkei_units', 'jse_units']
+position = ['aex_pos_val', 'nikkei_pos_val', 'jse_pos_value']
+weights = np.array([0.4, 0.4, 0.2])
+prices = ['aex', 'nikkei_eur', 'jse_eur']
+
+#Set up initial portfolio positions.
+df_re.loc[0: 1, 'aex_units'] = initial_val * aex_weight / df['aex'][0]
+df_re.loc[0, 'aex_pos_val'] = aex_weight * initial_val
+
+df_re.loc[0: 1, 'nikkei_units'] = initial_val * nikkei_weight / df['nikkei_eur'][0]
+df_re.loc[0, 'nikkei_pos_val'] = nikkei_weight * initial_val
+
+df_re.loc[0: 1, 'jse_units'] = initial_val * jse_weight / df['jse_eur'][0]
+df_re.loc[0, 'jse_pos_val'] = jse_weight * initial_val
+
+df_re.loc[0, 'equity_val'] = np.sum(df_re.iloc[0, 3:6])
+
+####Rebalancing loop.
+
+for i in range(1, np.shape(df_re)[0] - 1):
+#Calculate position values.
+    df_re.loc[i, 'aex_pos_val'] = df['aex'][i] * df_re['aex_units'][i]
+    df_re.loc[i, 'nikkei_pos_val'] = df['nikkei_eur'][i] * df_re['nikkei_units'][i]
+    df_re.loc[i, 'jse_pos_val'] = df['jse_eur'][i] * df_re['jse_units'][i]
+
+    df_re.loc[i, 'equity_val'] = np.sum(df_re.iloc[i, 3:6])
+
+###Calculate new unit numbers due to rebalancing.
+
+    #Calculate new number of units by dividing previous  weight of previous portfolio value by new price.
+    df_re.loc[i + 1, 'aex_units'] = df_re.loc[i, 'equity_val'] * aex_weight / df['aex'][i]
+    df_re.loc[i + 1, 'nikkei_units'] = df_re.loc[i, 'equity_val'] * nikkei_weight / df['nikkei_eur'][i]
+    df_re.loc[i + 1, 'jse_units'] = df_re.loc[i, 'equity_val'] * jse_weight / df['jse_eur'][i]
+
+#Not ideal, but I had to do the last line this way to get it to work.
+df_re.iloc[-1, df_re.columns.get_loc('aex_pos_val')] = df.aex.iloc[-1] * df_re.aex_units.iloc[-1]
+df_re.iloc[-1, df_re.columns.get_loc('nikkei_pos_val')] = df.nikkei_eur.iloc[-1] * df_re.nikkei_units.iloc[-1]
+df_re.iloc[-1, df_re.columns.get_loc('jse_pos_val')] = df.jse_eur.iloc[-1] * df_re.jse_units.iloc[-1]
+
+index_aex = df_re.columns.get_loc('aex_pos_val')
+index_nikkei = df_re.columns.get_loc('nikkei_pos_val')
+index_jse = df_re.columns.get_loc('jse_pos_val')
+
+df_re.iloc[-1, -1] = np.sum(df_re.iloc[-1, [index_aex, index_nikkei, index_jse]])
+
+#Add equity_val to df. First line exluded because used as a starting point for positons.
+df['equity_val'] = np.array(df_re.loc[1:, 'equity_val'])
+
+#Calculate equity returns.
+df['equity_ret'] = np.log(df.equity_val) - np.log(df.equity_val.shift(1))
+
+#Calculate equity losses.
+df['equity_loss'] = np.zeros(np.shape(df)[0])
+
+#First loss done manually.
+df.iloc[0, df.columns.get_loc('equity_loss')] = -(df.iloc[0, df.columns.get_loc('equity_val')] - initial_val)
+
+for i in range(1, np.shape(df)[0]):
+    df.iloc[i, df.columns.get_loc('equity_loss')] = -(df.iloc[i, df.columns.get_loc('equity_val')] - df.iloc[i - 1, df.columns.get_loc('equity_val')])
 
 
+#Daily portfolio losses.
+df['total_loss'] = df['equity_loss'] + df['debt_loss']
+df['total_loss'] = df['equity_loss'] + df['debt_loss']
 
-
-###############################################################################
-# actual assignment part
-###############################################################################
-df = df.iloc[1:]
-
-# var-covar on multivariate normal dist:
-wvol_n = rel_weights[0]**2 * np.std(df.nik_ret) 
-wvol_j = rel_weights[1]**2 * np.std(df.jse_ret) 
-wvol_a = rel_weights[2]**2 * np.std(df.aex_ret) 
-
-wcov_nj = rel_weights[0]*rel_weights[1]*np.cov(df.nik_ret, df.jse_ret)[0,1]
-wcov_na = rel_weights[0]*rel_weights[2]*np.cov(df.nik_ret, df.aex_ret)[0,1]
-wcov_ja = rel_weights[1]*rel_weights[2]*np.cov(df.jse_ret, df.aex_ret)[0,1]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+df.to_csv('/Users/connorstevens/Documents/GitHub/QFRM/Data/loss_df.csv')
 
 
 
