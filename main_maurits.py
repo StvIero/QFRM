@@ -223,8 +223,16 @@ df['total_loss'] = df['equity_loss'] + df['debt_loss']
 
 #df.to_csv('/Users/connorstevens/Documents/GitHub/QFRM/Data/loss_df.csv')
 
-historical_sim_VaR = np.quantile(df['total_loss'][1:], 0.95)
+#Calculte Value-at-Risk based on historical simulation.
+historical_sim_VaR975 = np.quantile(df['total_loss'][1:], 0.975)
+historical_sim_VaR99 = np.quantile(df['total_loss'][1:], 0.99)
 
-historical_sim_ES = np.mean(df['total_loss'][df['total_loss'] >= historical_sim_VaR])
+#Caluclate Expected Shortfall based on historical simulation.
+historical_sim_ES975 = np.mean(df['total_loss'][df['total_loss'] >= historical_sim_VaR975])
+historical_sim_ES99 = np.mean(df['total_loss'][df['total_loss'] >= historical_sim_VaR99])
 
-
+#Print results.
+print('97.5% VaR is ' + str(historical_sim_VaR975))
+print('97.5% ES is ' + str(historical_sim_ES975))
+print('99% VaR is ' + str(historical_sim_VaR99))
+print('99% ES is ' + str(historical_sim_ES99))

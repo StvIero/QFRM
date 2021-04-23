@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7b611e09-e461-4a47-b833-77ed2a5de65f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.python-version" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/QFRM.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/QFRM.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="7b611e09-e461-4a47-b833-77ed2a5de65f" name="Default Changelist" comment="Rebalancing and loss dataframe.">
+      <change afterPath="$PROJECT_DIR$/Data/loss_df.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/VaR_ES.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main_maurits.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_maurits.py" afterDir="false" />
     </list>
@@ -15,6 +13,11 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1qbz4tarKSVQmUgKApVoRvp7mAp" />
@@ -31,9 +34,41 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="settings.editor.selected.configurable" value="pyconsole" />
   </component>
-  <component name="RunManager">
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="QFRM" is-module-sdk="true">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="QFRM" />
+      </console-settings>
+    </option>
+    <option name="myUseExistingConsole" value="true" />
+  </component>
+  <component name="RunManager" selected="Python.main_maurits">
+    <configuration name="VaR_ES" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="QFRM" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/VaR_ES.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="QFRM" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -78,6 +113,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.main_maurits" />
+        <item itemvalue="Python.VaR_ES" />
       </list>
     </recent_temporary>
   </component>
@@ -92,7 +128,54 @@
       <workItem from="1617362895116" duration="11000" />
       <workItem from="1618872951454" duration="1500000" />
       <workItem from="1618874940348" duration="120000" />
+      <workItem from="1619022626884" duration="117000" />
+      <workItem from="1619022778733" duration="21796000" />
+      <workItem from="1619109051297" duration="2081000" />
+      <workItem from="1619167055604" duration="2916000" />
     </task>
+    <task id="LOCAL-00001" summary="Rebalancing.">
+      <created>1619024531021</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1619024531021</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Rebalancing.">
+      <created>1619041906213</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1619041906213</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Rebalancing.">
+      <created>1619079957346</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1619079957346</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Rebalancing.">
+      <created>1619104642393</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1619104642393</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Rebalancing.">
+      <created>1619106203322</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1619106203322</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Rebalancing and loss dataframe.">
+      <created>1619166781469</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1619166781469</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -112,5 +195,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Rebalancing." />
+    <MESSAGE value="Rebalancing and loss dataframe." />
+    <option name="LAST_COMMIT_MESSAGE" value="Rebalancing and loss dataframe." />
   </component>
 </project>
