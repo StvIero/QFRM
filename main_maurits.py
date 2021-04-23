@@ -232,7 +232,7 @@ historical_sim_ES975 = np.mean(df['total_loss'][df['total_loss'] >= historical_s
 historical_sim_ES99 = np.mean(df['total_loss'][df['total_loss'] >= historical_sim_VaR99])
 
 #Print results.
-print('97.5% VaR is ' + str(historical_sim_VaR975))
-print('97.5% ES is ' + str(historical_sim_ES975))
-print('99% VaR is ' + str(historical_sim_VaR99))
-print('99% ES is ' + str(historical_sim_ES99))
+print('97.5% VaR is ' + str(round(historical_sim_VaR975, 2)))
+print('97.5% ES is ' + str(round(historical_sim_ES975, 2)))
+print('99% VaR is ' + str(round(historical_sim_VaR99, 2)))
+print('99% ES is ' + str(round(historical_sim_ES99, 2)))
