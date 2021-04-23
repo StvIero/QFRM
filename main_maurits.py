@@ -221,9 +221,10 @@ for i in range(1, np.shape(df)[0]):
 df['total_loss'] = df['equity_loss'] + df['debt_loss']
 df['total_loss'] = df['equity_loss'] + df['debt_loss']
 
-df.to_csv('/Users/connorstevens/Documents/GitHub/QFRM/Data/loss_df.csv')
+#df.to_csv('/Users/connorstevens/Documents/GitHub/QFRM/Data/loss_df.csv')
 
+historical_sim_VaR = np.quantile(df['total_loss'][1:], 0.95)
 
-
+historical_sim_ES = np.mean(df['total_loss'][df['total_loss'] >= historical_sim_VaR])
 
 
