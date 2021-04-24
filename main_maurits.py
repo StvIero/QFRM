@@ -212,10 +212,11 @@ df['equity_val'] = np.array(df_re.loc[1:, 'equity_val'])
 
 #Calculate equity returns.
 df['equity_ret'] = np.log(df.equity_val) - np.log(df.equity_val.shift(1))
+df_re['equity_ret'] = np.log(df_re.equity_val) - np.log(df_re.equity_val.shift(1))
 
 
 """
-End of rebalancing code
+End of rebalancing code/data is done for now
 """
 
 
@@ -262,7 +263,8 @@ wcov_na = rel_weights[0]*rel_weights[2]*np.cov(df.nikkei_ret, df.aex_ret)[0,1]
 wcov_ja = rel_weights[1]*rel_weights[2]*np.cov(df.jse_ret, df.aex_ret)[0,1]
 
 # get portfolio vol, to get VaR:
-vol_port = np.sqrt(wvol_a + wvol_j + wvol_n + wcov_nj + wcov_na + wcov_ja)
+# vol_port = np.sqrt(wvol_a + wvol_j + wvol_n + wcov_nj + wcov_na + wcov_ja)
+vol_port = np.sqrt(np.std(df_re.equity_ret[1:]))
 
 # normal VaRs 
 print('Assuming rets are normal:')
@@ -282,9 +284,6 @@ for i in [3,4,5,6]:
     print('If nu =', i)
     ST_VAR_ES(i, vol_port)
 
-# get QQ-plot
-
-sm.qqplot(df['equity_ret']/np.std(df['equity_ret']), line='45')
-
-
+# get QQ-plot to compare to normal dist -- obviously fat fails...
+sm.qqplot(df_re['equity_ret']/np.std(df_re['equity_ret']), line='45')
 
