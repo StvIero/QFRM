@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7b611e09-e461-4a47-b833-77ed2a5de65f" name="Default Changelist" comment="VaR and ES calculations for absolute weights.">
+    <list default="true" id="7b611e09-e461-4a47-b833-77ed2a5de65f" name="Default Changelist" comment="Portfolio VaR">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/VaR_ES.py" beforeDir="false" afterPath="$PROJECT_DIR$/VaR_ES.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main_maurits.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_maurits.py" afterDir="false" />
@@ -130,7 +130,7 @@
       <workItem from="1619022626884" duration="117000" />
       <workItem from="1619022778733" duration="21796000" />
       <workItem from="1619109051297" duration="2081000" />
-      <workItem from="1619167055604" duration="26834000" />
+      <workItem from="1619167055604" duration="31059000" />
     </task>
     <task id="LOCAL-00001" summary="Rebalancing.">
       <created>1619024531021</created>
@@ -195,7 +195,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619192830896</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Portfolio VaR">
+      <created>1619277771929</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1619277771929</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -219,7 +226,8 @@
     <MESSAGE value="Rebalancing and loss dataframe." />
     <MESSAGE value="VaR and ES calculations added." />
     <MESSAGE value="VaR and ES calculations for absolute weights." />
-    <option name="LAST_COMMIT_MESSAGE" value="VaR and ES calculations for absolute weights." />
+    <MESSAGE value="Portfolio VaR" />
+    <option name="LAST_COMMIT_MESSAGE" value="Portfolio VaR" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

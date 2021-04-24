@@ -60,6 +60,12 @@ weights = np.array([0.6, 0.6, 0.3, -0.5])
 for l in range(1, np.shape(df)[0]):
     #Create covariance matrix to fill.
     port_covar = np.zeros((4,4))
+    aex_pos_val = (100_000_000 * 0.6) * np.exp(np.sum(df['aex_ret'].iloc[1:l + 1]))
+    nikkei_pos_val = (100_000_000 * 0.6) * np.exp(np.sum(df['nikkei_ret'].iloc[1:l + 1]))
+    jse_pos_val = (100_000_000 * 0.3) * np.exp(np.sum(df['aex_ret'].iloc[1:l + 1]))
+    libor_pos_val = (100_000_000 * -0.5) * (np.exp(np.sum(df['libor_change'].iloc[1:l + 1]))) #+ (100_000_000 * -0.5) * df['libor'].iloc[l + 1] / 250
+    portval = np.sum([aex_pos_val, nikkei_pos_val, jse_pos_val, libor_pos_val])
+    weights = np.array([aex_pos_val/portval, nikkei_pos_val/portval, jse_pos_val/portval, libor_pos_val/portval])
     for j in range(0, 3):
         for i in range(0, 3):
             port_covar[i, j] = port_corr[i,j] * variance[l, i] * variance[l, j]
@@ -69,15 +75,11 @@ for l in range(1, np.shape(df)[0]):
 
 
 
-
-
-
-
-
-plt.plot(aex_var_for.variance.values, label = 'AEX forecast variance')
-plt.plot(nikkei_var_for.variance.values, label = 'Nikkei forecast variance')
-plt.plot(jse_var_for.variance.values, label = 'JSE forecast variance')
-plt.plot(libor_var_for.variance.values, label = 'LIBOR forecast variance')
+plt.plot(aex_var_for.variance.values, label = 'AEX forecast variance', alpha = 0.5)
+plt.plot(nikkei_var_for.variance.values, label = 'Nikkei forecast variance', alpha = 0.5)
+plt.plot(jse_var_for.variance.values, label = 'JSE forecast variance', alpha = 0.5)
+plt.plot(libor_var_for.variance.values, label = 'LIBOR forecast variance', alpha = 0.5)
+plt.plot(df['port_var'], label = 'Porfolio Variance', alpha = 0.5)
 #plt.plot(df['aex_ret'].dropna() * 100, alpha = 0.5, label = 'returns')
 plt.legend()
 plt.show()
