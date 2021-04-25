@@ -258,9 +258,10 @@ wvol_n = rel_weights[0]**2 * np.std(df.nikkei_ret)**2
 wvol_j = rel_weights[1]**2 * np.std(df.jse_ret)**2 
 wvol_a = rel_weights[2]**2 * np.std(df.aex_ret)**2 
 
-wcov_nj = rel_weights[0]*rel_weights[1]*np.cov(df.nikkei_ret, df.jse_ret)[0,1]
-wcov_na = rel_weights[0]*rel_weights[2]*np.cov(df.nikkei_ret, df.aex_ret)[0,1]
-wcov_ja = rel_weights[1]*rel_weights[2]*np.cov(df.jse_ret, df.aex_ret)[0,1]
+
+wcov_nj = 2*rel_weights[0]*rel_weights[1]*np.cov(df.nikkei_ret, df.jse_ret)[0,1]
+wcov_na = 2*rel_weights[0]*rel_weights[2]*np.cov(df.nikkei_ret, df.aex_ret)[0,1]
+wcov_ja = 2*rel_weights[1]*rel_weights[2]*np.cov(df.jse_ret, df.aex_ret)[0,1]
 
 # get portfolio vol, to get VaR:
 # vol_port = np.sqrt(wvol_a + wvol_j + wvol_n + wcov_nj + wcov_na + wcov_ja)
@@ -287,3 +288,57 @@ for i in [3,4,5,6]:
 # get QQ-plot to compare to normal dist -- obviously fat fails...
 sm.qqplot(df_re['equity_ret']/np.std(df_re['equity_ret']), line='45')
 
+# make var covar function that puts out VaR and ES, after whatever thing you put out
+def VAR_COVAR(logrets, assetvalues, t, T, alpha, dist, nu):
+    # assume t, T are index values, the rest is obvi
+    # fill in alpha as 0.025 or 0.01, log rets are not multiplied by -1 yet
+    logrets = logrets.iloc[t:T,:]
+    assetvalues = assetvalues.iloc[t:T,:]
+    
+    # get port std dev
+    rel_weights = np.array([0.6,0.6,0.3,-0.5])
+    wvol1 = rel_weights[0]**2*np.std(logrets.iloc[:,0])
+    wvol2 = rel_weights[1]**2*np.std(logrets.iloc[:,1])
+    wvol3 = rel_weights[2]**2*np.std(logrets.iloc[:,2])
+    wvol4 = rel_weights[3]**2*np.std(logrets.iloc[:,3])
+    
+    wcov_jn = 2*rel_weights[0]*rel_weights[1]*np.cov(logrets.iloc[:,0], logrets.iloc[:,1])[0,1]
+    wcov_ja = 2*rel_weights[0]*rel_weights[2]*np.cov(logrets.iloc[:,0], logrets.iloc[:,2])[0,1]
+    wcov_na = 2*rel_weights[1]*rel_weights[2]*np.cov(logrets.iloc[:,1], logrets.iloc[:,2])[0,1]
+    wcov_jl = 2*rel_weights[0]*rel_weights[3]*np.cov(logrets.iloc[:,0], logrets.iloc[:,3])[0,1]
+    wcov_al = 2*rel_weights[1]*rel_weights[3]*np.cov(logrets.iloc[:,1], logrets.iloc[:,3])[0,1]
+    wcov_nl = 2*rel_weights[2]*rel_weights[3]*np.cov(logrets.iloc[:,2], logrets.iloc[:,3])[0,1]
+    
+    vol_port = np.sqrt(wvol1 + wvol2 + wvol3 + wvol4 + wcov_jn + wcov_ja + wcov_na + wcov_jl+ wcov_al+ wcov_nl)
+    
+    avgret_port=0
+    for i in range(len(logrets.columns)):
+        logrets.iloc[:,i] *= rel_weights[i]
+        avgret_port += np.mean(logrets.iloc[:,i])
+    
+    print(avgret_port)
+    port_value = 100000000
+    if dist=='normal':
+        VaR = (avgret_port + norm.ppf(alpha)*vol_port)*port_value*-1
+        ES = (avgret_port - norm.pdf(norm.ppf(alpha))/(alpha) * vol_port) * port_value*-1
+    elif dist=='t':
+        sigma = vol_port / np.sqrt(nu/(nu-2))
+        VaR = (avgret_port + t.ppf(alpha, nu, 0, 1)*sigma)*port_value #*-1
+        
+        frac11 = (nu+(t.ppf(alpha, nu, 0, 1))**2)/(nu-1)
+        frac12 = t.pdf(t.ppf(alpha, nu, 0, 1), nu, 0, 1)/(alpha)
+        ES = (average_port_ret - sigma*frac11*frac12)*port_value*-1
+        
+        
+    # then get VAR and ESs based on alpha xddddd
+    return VaR, ES
+
+
+logrets = df[['jse_ret', 'nikkei_ret', 'aex_ret', 'libor_change']]
+assetvalues = df[['nikkei_eur', 'jse_eur', 'aex']]
+weights = np.array([[0.60, 0.60, 0.30, -0.50],
+                    [0.60, 0.60, 0.30, -0.50],
+                    [0.60, 0.60, 0.30, -0.50],
+                    [0.60, 0.60, 0.30, -0.50]])
+
+print(VAR_COVAR(logrets, assetvalues, 0, 299, 0.025, 'normal', 4))
