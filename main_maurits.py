@@ -289,11 +289,11 @@ for i in [3,4,5,6]:
 sm.qqplot(df_re['equity_ret']/np.std(df_re['equity_ret']), line='45')
 
 # make var covar function that puts out VaR and ES, after whatever thing you put out
-def VAR_COVAR(logrets, assetvalues, t, T, alpha, dist, nu):
-    # assume t, T are index values, the rest is obvi
+def VAR_COVAR(logrets, assetvalues, start, stop, alpha, dist, nu):
+    # assume start, stop are index values, the rest is obvi
     # fill in alpha as 0.025 or 0.01, log rets are not multiplied by -1 yet
-    logrets = logrets.iloc[t:T,:]
-    assetvalues = assetvalues.iloc[t:T,:]
+    logrets = logrets.iloc[start:stop,:]
+    assetvalues = assetvalues.iloc[start:stop,:]
     
     # get port std dev
     rel_weights = np.array([0.6,0.6,0.3,-0.5])
@@ -318,12 +318,13 @@ def VAR_COVAR(logrets, assetvalues, t, T, alpha, dist, nu):
     
     print(avgret_port)
     port_value = 100000000
+    
     if dist=='normal':
         VaR = (avgret_port + norm.ppf(alpha)*vol_port)*port_value*-1
         ES = (avgret_port - norm.pdf(norm.ppf(alpha))/(alpha) * vol_port) * port_value*-1
-    elif dist=='t':
+    elif dist=='student':
         sigma = vol_port / np.sqrt(nu/(nu-2))
-        VaR = (avgret_port + t.ppf(alpha, nu, 0, 1)*sigma)*port_value #*-1
+        VaR = (avgret_port + t.ppf(alpha, nu, 0, 1)*sigma)*port_value*-1
         
         frac11 = (nu+(t.ppf(alpha, nu, 0, 1))**2)/(nu-1)
         frac12 = t.pdf(t.ppf(alpha, nu, 0, 1), nu, 0, 1)/(alpha)
@@ -336,9 +337,4 @@ def VAR_COVAR(logrets, assetvalues, t, T, alpha, dist, nu):
 
 logrets = df[['jse_ret', 'nikkei_ret', 'aex_ret', 'libor_change']]
 assetvalues = df[['nikkei_eur', 'jse_eur', 'aex']]
-weights = np.array([[0.60, 0.60, 0.30, -0.50],
-                    [0.60, 0.60, 0.30, -0.50],
-                    [0.60, 0.60, 0.30, -0.50],
-                    [0.60, 0.60, 0.30, -0.50]])
-
-print(VAR_COVAR(logrets, assetvalues, 0, 299, 0.025, 'normal', 4))
+print(VAR_COVAR(logrets, assetvalues, 0, 299, 0.025, 'student', 10000000000))
