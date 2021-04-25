@@ -224,6 +224,20 @@ df['loss'] = aex_val * (1 - np.exp(df.aex_ret)) + nikkei_val * (1 - np.exp(df.ni
 
 #df.to_csv('/Users/connorstevens/Documents/GitHub/QFRM/Data/loss_df.csv')
 
+####BACKTESTING
+var975 = np.zeros(2103)
+var99 = np.zeros(2103)
+es975 = np.zeros(2103)
+es99 = np.zeros(2103)
+
+
+
+len(df['aex_ret'].dropna())
+for i in range(1, 2103):
+    var975[i] = np.quantile(df.iloc[i: i + 250, -1], 0.975)
+    var99[i] = np.quantile(df.iloc[i: i + 250, -1], 0.99)
+
+
 #Calculte Value-at-Risk based on historical simulation.
 historical_sim_VaR975 = np.quantile(df['loss'][1:], 0.975)
 historical_sim_VaR99 = np.quantile(df['loss'][1:], 0.99)
@@ -237,3 +251,6 @@ print('97.5% VaR is ' + str(round(historical_sim_VaR975, 2)))
 print('97.5% ES is ' + str(round(historical_sim_ES975, 2)))
 print('99% VaR is ' + str(round(historical_sim_VaR99, 2)))
 print('99% ES is ' + str(round(historical_sim_ES99, 2)))
+
+sns.histplot(df.loss, kde = True)
+plt.show()

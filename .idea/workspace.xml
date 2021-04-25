@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7b611e09-e461-4a47-b833-77ed2a5de65f" name="Default Changelist" comment="Portfolio VaR">
-      <change afterPath="$PROJECT_DIR$/filtered_historical.py" afterDir="false" />
+    <list default="true" id="7b611e09-e461-4a47-b833-77ed2a5de65f" name="Default Changelist" comment="CCC function working. Still need to include expected shortfall.">
+      <change afterPath="$PROJECT_DIR$/Plots/ewma_vol.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/VaR_ES.py" beforeDir="false" afterPath="$PROJECT_DIR$/VaR_ES.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filtered_historical.py" beforeDir="false" afterPath="$PROJECT_DIR$/filtered_historical.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main_maurits.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_maurits.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -34,6 +34,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Plots" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -49,7 +50,12 @@
     </option>
     <option name="myUseExistingConsole" value="true" />
   </component>
-  <component name="RunManager" selected="Python.VaR_ES">
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Plots" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.main_maurits">
     <configuration name="QFRM_ass1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="QFRM" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -110,6 +116,25 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="filtered_historical" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="QFRM" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/filtered_historical.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main_maurits" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="QFRM" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -131,9 +156,10 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main_maurits" />
+        <item itemvalue="Python.filtered_historical" />
         <item itemvalue="Python.QFRM_ass1" />
         <item itemvalue="Python.VaR_ES" />
-        <item itemvalue="Python.main_maurits" />
       </list>
     </recent_temporary>
   </component>
@@ -151,7 +177,7 @@
       <workItem from="1619022626884" duration="117000" />
       <workItem from="1619022778733" duration="21796000" />
       <workItem from="1619109051297" duration="2081000" />
-      <workItem from="1619167055604" duration="44237000" />
+      <workItem from="1619167055604" duration="65511000" />
     </task>
     <task id="LOCAL-00001" summary="Rebalancing.">
       <created>1619024531021</created>
@@ -230,7 +256,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619289277077</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="CCC function working. Still need to include expected shortfall.">
+      <created>1619341849137</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1619341849137</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -255,7 +288,19 @@
     <MESSAGE value="VaR and ES calculations added." />
     <MESSAGE value="VaR and ES calculations for absolute weights." />
     <MESSAGE value="Portfolio VaR" />
-    <option name="LAST_COMMIT_MESSAGE" value="Portfolio VaR" />
+    <MESSAGE value="CCC function working. Still need to include expected shortfall." />
+    <option name="LAST_COMMIT_MESSAGE" value="CCC function working. Still need to include expected shortfall." />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/filtered_historical.py</url>
+          <line>14</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/QFRM$main_maurits.coverage" NAME="main_maurits Coverage Results" MODIFIED="1619185759195" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
