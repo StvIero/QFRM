@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7b611e09-e461-4a47-b833-77ed2a5de65f" name="Default Changelist" comment="CCC function working. Still need to include expected shortfall.">
-      <change afterPath="$PROJECT_DIR$/Plots/ewma_vol.png" afterDir="false" />
+    <list default="true" id="7b611e09-e461-4a47-b833-77ed2a5de65f" name="Default Changelist" comment="Starting on backtesting.">
+      <change afterPath="$PROJECT_DIR$/Plots/var_es975CCCn.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots/var_es975CCCt.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots/var_es99CCCn.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots/var_es99CCCt.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/var_covar.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VaR_ES.py" beforeDir="false" afterPath="$PROJECT_DIR$/VaR_ES.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/filtered_historical.py" beforeDir="false" afterPath="$PROJECT_DIR$/filtered_historical.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main_maurits.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_maurits.py" afterDir="false" />
     </list>
@@ -177,7 +182,7 @@
       <workItem from="1619022626884" duration="117000" />
       <workItem from="1619022778733" duration="21796000" />
       <workItem from="1619109051297" duration="2081000" />
-      <workItem from="1619167055604" duration="65511000" />
+      <workItem from="1619167055604" duration="79332000" />
     </task>
     <task id="LOCAL-00001" summary="Rebalancing.">
       <created>1619024531021</created>
@@ -263,7 +268,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619341849137</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Starting on backtesting.">
+      <created>1619371924842</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1619371924842</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -289,15 +301,21 @@
     <MESSAGE value="VaR and ES calculations for absolute weights." />
     <MESSAGE value="Portfolio VaR" />
     <MESSAGE value="CCC function working. Still need to include expected shortfall." />
-    <option name="LAST_COMMIT_MESSAGE" value="CCC function working. Still need to include expected shortfall." />
+    <MESSAGE value="Starting on backtesting." />
+    <option name="LAST_COMMIT_MESSAGE" value="Starting on backtesting." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/filtered_historical.py</url>
-          <line>14</line>
+          <line>18</line>
           <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/filtered_historical.py</url>
+          <line>44</line>
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

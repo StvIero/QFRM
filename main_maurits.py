@@ -225,17 +225,47 @@ df['loss'] = aex_val * (1 - np.exp(df.aex_ret)) + nikkei_val * (1 - np.exp(df.ni
 #df.to_csv('/Users/connorstevens/Documents/GitHub/QFRM/Data/loss_df.csv')
 
 ####BACKTESTING
-var975 = np.zeros(2103)
-var99 = np.zeros(2103)
-es975 = np.zeros(2103)
-es99 = np.zeros(2103)
+window = 250
+var_es975HS = np.zeros((np.shape(df)[0] - window, 3))
+var_es99HS = np.zeros((np.shape(df)[0] - window, 3))
+# es975 = np.zeros((np.shape(df)[0] - window, 3))
+# es99 = np.zeros((np.shape(df)[0] - window, 3))
 
 
+for i in range(1, np.shape(df)[0] - window): #2103):
+    var_es975HS[i, 0] = np.quantile(df.iloc[i: i + window, -1], 0.975)
+    var_es975HS[i, 1] = np.mean(df.iloc[i: i + window, -1][df.iloc[i: i + window, -1] >= var_es975HS[i, 0]])
+    var_es975HS[i, 2] = df.iloc[i, -1]
 
-len(df['aex_ret'].dropna())
-for i in range(1, 2103):
-    var975[i] = np.quantile(df.iloc[i: i + 250, -1], 0.975)
-    var99[i] = np.quantile(df.iloc[i: i + 250, -1], 0.99)
+    var_es99HS[i, 0] = np.quantile(df.iloc[i: i + window, -1], 0.99)
+    var_es99HS[i, 1] = np.mean(df.iloc[i: i + window, -1][df.iloc[i: i + window, -1] >= var_es99HS[i, 0]])
+    var_es99HS[i, 2] = df.iloc[i, -1]
+
+#plt.plot(var_es975[1:, 0], label = '97.5% VaR')
+# plt.plot(var_es975[1: 1], alpha = 0.5, label = '97.5% ES')
+# plt.plot(var_es975[1:, 2], alpha = 0.7, label = 'Returns')
+# plt.legend()
+pd.to_datetime(df.index.values)
+# plt.show()
+window_start_index = np.shape(df)[0] - window
+
+index = pd.to_datetime(df.iloc[window + 1:, :].index.values)
+plt.plot(index, var_es975HS[1:, 1], label = '97.5% ES')
+plt.plot(index,var_es975HS[1:, 0], label = '97.5% VaR')
+plt.plot(index,var_es975HS[1:, 2], alpha = 0.5, label = 'Returns')
+plt.ylabel('Losses (Euros)')
+plt.xlabel('Date')
+plt.legend()
+plt.show()
+
+plt.plot(index, var_es99HS[1:, 1], label = '99% ES')
+plt.plot(index,var_es99HS[1:, 0], label = '99% VaR')
+plt.plot(index,var_es99HS[1:, 2], alpha = 0.5, label = 'Returns')
+plt.ylabel('Losses (Euros)')
+plt.xlabel('Date')
+plt.legend()
+plt.show()
+
 
 
 #Calculte Value-at-Risk based on historical simulation.
