@@ -15,11 +15,6 @@ import seaborn as sns
 import requests
 import io
 
-# variable specification:
-abs_weights = [10, 10, 10]
-rel_weights = [abs_weights[0]/sum(abs_weights), abs_weights[1]/sum(abs_weights), abs_weights[2]/sum(abs_weights)]
-
-
 ##import data.
 #Pull csv from GitHub so we dont have to keep changing directories and file paths.
 Nikurl = "https://github.com/EarlGreyIsBae/QFRM/raw/main/Data/NIKKEI_225.csv"
@@ -82,7 +77,7 @@ EUR_Libor['3M_EUR_Libor'] = EUR_Libor['3M_EUR_Libor'].interpolate(method = 'line
 
 
 
-# create new master df with all mfing uuuuhhh price series...
+#Empty datafram to store merged data.
 df = pd.DataFrame()
 df['Date'] = dates
 df.set_index('Date', inplace=True)
@@ -108,123 +103,184 @@ df = df.ffill(axis=0)
 
 
 
-#Get foreign prices in euros.
+#Get foreign prices in euros and changes in interest rate.
 df['jse_eur'] = df['jse'] * df['eurzar_bid']
 df['nikkei_eur'] = df['nikkei'] * df['euryen_bid']
 df['jse_ret'] = np.log(df.jse_eur) - np.log(df.jse_eur.shift(1))
 df['nikkei_ret'] = np.log(df.nikkei_eur) - np.log(df.nikkei_eur.shift(1))
 df['aex_ret'] = np.log(df.aex) - np.log(df.aex.shift(1))
-
-
-
-"""
-Rebalancing Code:
-----------------
-100m euros:
-    50m cash
-    50m debt
-
-Weights: Relative
-    40% AEX
-    40% Nikkei
-    20% JSE
-    
-"""
-initial_val = 100000000
-debt_weight = 0.5
-debt_val = initial_val * debt_weight
-aex_weight = 0.4
-nikkei_weight = 0.4
-jse_weight = 0.2
-
-##Add debt into df.
-
-#Change in euro libor rate.
 df['libor_change'] = (df.libor - df.libor.shift(1))/100
 
-#Calculate losses due to changes in libor rate.
-df['debt_loss'] = -(debt_val * (1 - np.exp(-df['libor_change']))) + (debt_val * df['libor'])/250
+#Set portfolio absolute weights
+port_val = 100_000_000
+aex_val = 0.6 * port_val
+nikkei_val = 0.6 * port_val
+jse_val = 0.3 * port_val
+#Short debt, therefore weight is actually negative.
+debt_val = 0.5 * port_val
 
+df['loss'] = aex_val * (1 - np.exp(df.aex_ret)) + nikkei_val * (1 - np.exp(df.nikkei_ret)) + jse_val * (1 - np.exp(df.jse_ret))  - debt_val * (1 - np.exp(-df.libor_change)) + debt_val * df.libor/250
+#
+# """
+# Rebalancing Code:
+# ----------------
+# 100m euros:
+#     50m cash
+#     50m debt
+#
+# Weights: Relative
+#     40% AEX
+#     40% Nikkei
+#     20% JSE
+#
+# """
+# initial_val = 100000000
+# debt_weight = -0.5
+# debt_val = initial_val * debt_weight
+# aex_weight = 0.6
+# nikkei_weight = 0.6
+# jse_weight = 0.3
+#
+# ##Add debt into df
+#
+# #Calculate losses due to changes in libor rate.
+# df['debt_loss'] = -(debt_val * (1 - np.exp(-df['libor_change']))) + (debt_val * df['libor'])/250
+#
+#
+# #Create dataframe to store data used for rebalancing calculations.
+# df_re = pd.DataFrame({'aex_units': np.zeros(np.shape(df)[0] + 1),
+#                                'nikkei_units': np.zeros(np.shape(df)[0] + 1),
+#                                'jse_units': np.zeros(np.shape(df)[0] + 1),
+#                                'aex_pos_val': np.zeros(np.shape(df)[0] + 1),
+#                                'nikkei_pos_val': np.zeros(np.shape(df)[0] + 1),
+#                                'jse_pos_val': np.zeros(np.shape(df)[0] + 1),
+#                                'equity_val': np.zeros(np.shape(df)[0] + 1)})
+#
+# #Variables to reference units, position, price columns and weights.
+# units = ['aex_units', 'nikkei_units', 'jse_units']
+# position = ['aex_pos_val', 'nikkei_pos_val', 'jse_pos_value']
+# weights = np.array([0.4, 0.4, 0.2])
+# prices = ['aex', 'nikkei_eur', 'jse_eur']
+#
+# #Set up initial portfolio positions.
+# df_re.loc[0: 1, 'aex_units'] = initial_val * aex_weight / df['aex'][0]
+# df_re.loc[0, 'aex_pos_val'] = aex_weight * initial_val
+#
+# df_re.loc[0: 1, 'nikkei_units'] = initial_val * nikkei_weight / df['nikkei_eur'][0]
+# df_re.loc[0, 'nikkei_pos_val'] = nikkei_weight * initial_val
+#
+# df_re.loc[0: 1, 'jse_units'] = initial_val * jse_weight / df['jse_eur'][0]
+# df_re.loc[0, 'jse_pos_val'] = jse_weight * initial_val
+#
+# df_re.loc[0, 'equity_val'] = np.sum(df_re.iloc[0, 3:6])
+#
+# ####Rebalancing loop.
 
-#Create dataframe to store data used for rebalancing calculations.
-df_re = pd.DataFrame({'aex_units': np.zeros(np.shape(df)[0] + 1),
-                               'nikkei_units': np.zeros(np.shape(df)[0] + 1),
-                               'jse_units': np.zeros(np.shape(df)[0] + 1),
-                               'aex_pos_val': np.zeros(np.shape(df)[0] + 1),
-                               'nikkei_pos_val': np.zeros(np.shape(df)[0] + 1),
-                               'jse_pos_val': np.zeros(np.shape(df)[0] + 1),
-                               'equity_val': np.zeros(np.shape(df)[0] + 1)})
-
-#Variables to reference units, position, price columns and weights.
-units = ['aex_units', 'nikkei_units', 'jse_units']
-position = ['aex_pos_val', 'nikkei_pos_val', 'jse_pos_value']
-weights = np.array([0.4, 0.4, 0.2])
-prices = ['aex', 'nikkei_eur', 'jse_eur']
-
-#Set up initial portfolio positions.
-df_re.loc[0: 1, 'aex_units'] = initial_val * aex_weight / df['aex'][0]
-df_re.loc[0, 'aex_pos_val'] = aex_weight * initial_val
-
-df_re.loc[0: 1, 'nikkei_units'] = initial_val * nikkei_weight / df['nikkei_eur'][0]
-df_re.loc[0, 'nikkei_pos_val'] = nikkei_weight * initial_val
-
-df_re.loc[0: 1, 'jse_units'] = initial_val * jse_weight / df['jse_eur'][0]
-df_re.loc[0, 'jse_pos_val'] = jse_weight * initial_val
-
-df_re.loc[0, 'equity_val'] = np.sum(df_re.iloc[0, 3:6])
-
-####Rebalancing loop.
-
-for i in range(1, np.shape(df_re)[0] - 1):
-#Calculate position values.
-    df_re.loc[i, 'aex_pos_val'] = df['aex'][i] * df_re['aex_units'][i]
-    df_re.loc[i, 'nikkei_pos_val'] = df['nikkei_eur'][i] * df_re['nikkei_units'][i]
-    df_re.loc[i, 'jse_pos_val'] = df['jse_eur'][i] * df_re['jse_units'][i]
-
-    df_re.loc[i, 'equity_val'] = np.sum(df_re.iloc[i, 3:6])
-
-###Calculate new unit numbers due to rebalancing.
-
-    #Calculate new number of units by dividing previous  weight of previous portfolio value by new price.
-    df_re.loc[i + 1, 'aex_units'] = df_re.loc[i, 'equity_val'] * aex_weight / df['aex'][i]
-    df_re.loc[i + 1, 'nikkei_units'] = df_re.loc[i, 'equity_val'] * nikkei_weight / df['nikkei_eur'][i]
-    df_re.loc[i + 1, 'jse_units'] = df_re.loc[i, 'equity_val'] * jse_weight / df['jse_eur'][i]
-
-#Not ideal, but I had to do the last line this way to get it to work.
-df_re.iloc[-1, df_re.columns.get_loc('aex_pos_val')] = df.aex.iloc[-1] * df_re.aex_units.iloc[-1]
-df_re.iloc[-1, df_re.columns.get_loc('nikkei_pos_val')] = df.nikkei_eur.iloc[-1] * df_re.nikkei_units.iloc[-1]
-df_re.iloc[-1, df_re.columns.get_loc('jse_pos_val')] = df.jse_eur.iloc[-1] * df_re.jse_units.iloc[-1]
-
-index_aex = df_re.columns.get_loc('aex_pos_val')
-index_nikkei = df_re.columns.get_loc('nikkei_pos_val')
-index_jse = df_re.columns.get_loc('jse_pos_val')
-
-df_re.iloc[-1, -1] = np.sum(df_re.iloc[-1, [index_aex, index_nikkei, index_jse]])
-
-#Add equity_val to df. First line exluded because used as a starting point for positons.
-df['equity_val'] = np.array(df_re.loc[1:, 'equity_val'])
-
-#Calculate equity returns.
-df['equity_ret'] = np.log(df.equity_val) - np.log(df.equity_val.shift(1))
-
-#Calculate equity losses.
-df['equity_loss'] = np.zeros(np.shape(df)[0])
-
-#First loss done manually.
-df.iloc[0, df.columns.get_loc('equity_loss')] = -(df.iloc[0, df.columns.get_loc('equity_val')] - initial_val)
-
-for i in range(1, np.shape(df)[0]):
-    df.iloc[i, df.columns.get_loc('equity_loss')] = -(df.iloc[i, df.columns.get_loc('equity_val')] - df.iloc[i - 1, df.columns.get_loc('equity_val')])
-
-
-#Daily portfolio losses.
-df['total_loss'] = df['equity_loss'] + df['debt_loss']
-df['total_loss'] = df['equity_loss'] + df['debt_loss']
+# for i in range(1, np.shape(df_re)[0] - 1):
+# #Calculate position values.
+#     df_re.loc[i, 'aex_pos_val'] = df['aex'][i] * df_re['aex_units'][i]
+#     df_re.loc[i, 'nikkei_pos_val'] = df['nikkei_eur'][i] * df_re['nikkei_units'][i]
+#     df_re.loc[i, 'jse_pos_val'] = df['jse_eur'][i] * df_re['jse_units'][i]
+#
+#     df_re.loc[i, 'equity_val'] = np.sum(df_re.iloc[i, 3:6])
+#
+# ###Calculate new unit numbers due to rebalancing.
+#
+#     #Calculate new number of units by dividing previous  weight of previous portfolio value by new price.
+#     df_re.loc[i + 1, 'aex_units'] = df_re.loc[i, 'equity_val'] * aex_weight / df['aex'][i]
+#     df_re.loc[i + 1, 'nikkei_units'] = df_re.loc[i, 'equity_val'] * nikkei_weight / df['nikkei_eur'][i]
+#     df_re.loc[i + 1, 'jse_units'] = df_re.loc[i, 'equity_val'] * jse_weight / df['jse_eur'][i]
+#
+# #Not ideal, but I had to do the last line this way to get it to work.
+# df_re.iloc[-1, df_re.columns.get_loc('aex_pos_val')] = df.aex.iloc[-1] * df_re.aex_units.iloc[-1]
+# df_re.iloc[-1, df_re.columns.get_loc('nikkei_pos_val')] = df.nikkei_eur.iloc[-1] * df_re.nikkei_units.iloc[-1]
+# df_re.iloc[-1, df_re.columns.get_loc('jse_pos_val')] = df.jse_eur.iloc[-1] * df_re.jse_units.iloc[-1]
+#
+# index_aex = df_re.columns.get_loc('aex_pos_val')
+# index_nikkei = df_re.columns.get_loc('nikkei_pos_val')
+# index_jse = df_re.columns.get_loc('jse_pos_val')
+#
+# df_re.iloc[-1, -1] = np.sum(df_re.iloc[-1, [index_aex, index_nikkei, index_jse]])
+#
+# #Add equity_val to df. First line exluded because used as a starting point for positons.
+# df['equity_val'] = np.array(df_re.loc[1:, 'equity_val'])
+#
+# #Calculate equity returns.
+# df['equity_ret'] = np.log(df.equity_val) - np.log(df.equity_val.shift(1))
+#
+# #Calculate equity losses.
+# df['equity_loss'] = np.zeros(np.shape(df)[0])
+#
+# #First loss done manually.
+# df.iloc[0, df.columns.get_loc('equity_loss')] = -(df.iloc[0, df.columns.get_loc('equity_val')] - initial_val)
+#
+# for i in range(1, np.shape(df)[0]):
+#     df.iloc[i, df.columns.get_loc('equity_loss')] = (df.iloc[i, df.columns.get_loc('equity_val')] - df.iloc[i - 1, df.columns.get_loc('equity_val')])
+#
+#
+# #Daily portfolio losses.
+# df['total_loss'] = df['equity_loss'] + df['debt_loss']
+# df['total_loss'] = df['equity_loss'] + df['debt_loss']
 
 #df.to_csv('/Users/connorstevens/Documents/GitHub/QFRM/Data/loss_df.csv')
 
-historical_sim_VaR = np.quantile(df['total_loss'][1:], 0.95)
+####BACKTESTING
+window = 1000
+var_es975HS = np.zeros((np.shape(df)[0] - window, 3))
+var_es99HS = np.zeros((np.shape(df)[0] - window, 3))
+# es975 = np.zeros((np.shape(df)[0] - window, 3))
+# es99 = np.zeros((np.shape(df)[0] - window, 3))
 
-historical_sim_ES = np.mean(df['total_loss'][df['total_loss'] >= historical_sim_VaR])
+
+for i in range(1, np.shape(df)[0] - window): #2103):
+    var_es975HS[i, 0] = np.quantile(df.iloc[i: i + window, -1], 0.975)
+    var_es975HS[i, 1] = np.mean(df.iloc[i: i + window, -1][df.iloc[i: i + window, -1] >= var_es975HS[i, 0]])
+    var_es975HS[i, 2] = df.iloc[i, -1]
+
+    var_es99HS[i, 0] = np.quantile(df.iloc[i: i + window, -1], 0.99)
+    var_es99HS[i, 1] = np.mean(df.iloc[i: i + window, -1][df.iloc[i: i + window, -1] >= var_es99HS[i, 0]])
+    var_es99HS[i, 2] = df.iloc[i, -1]
+
+#plt.plot(var_es975[1:, 0], label = '97.5% VaR')
+# plt.plot(var_es975[1: 1], alpha = 0.5, label = '97.5% ES')
+# plt.plot(var_es975[1:, 2], alpha = 0.7, label = 'Returns')
+# plt.legend()
+pd.to_datetime(df.index.values)
+# plt.show()
+window_start_index = np.shape(df)[0] - window
+
+index = pd.to_datetime(df.iloc[window + 1:, :].index.values)
+plt.plot(index, var_es975HS[1:, 1], label = '97.5% ES')
+plt.plot(index,var_es975HS[1:, 0], label = '97.5% VaR')
+plt.plot(index,var_es975HS[1:, 2], alpha = 0.5, label = 'Returns')
+plt.ylabel('Losses (Euros)')
+plt.xlabel('Date')
+plt.legend()
+plt.show()
+
+plt.plot(index, var_es99HS[1:, 1], label = '99% ES')
+plt.plot(index,var_es99HS[1:, 0], label = '99% VaR')
+plt.plot(index,var_es99HS[1:, 2], alpha = 0.5, label = 'Returns')
+plt.ylabel('Losses (Euros)')
+plt.xlabel('Date')
+plt.legend()
+plt.show()
 
 
+
+#Calculte Value-at-Risk based on historical simulation.
+historical_sim_VaR975 = np.quantile(df['loss'][1:], 0.975)
+historical_sim_VaR99 = np.quantile(df['loss'][1:], 0.99)
+
+#Caluclate Expected Shortfall based on historical simulation.
+historical_sim_ES975 = np.mean(df['loss'][df['loss'] >= historical_sim_VaR975])
+historical_sim_ES99 = np.mean(df['loss'][df['loss'] >= historical_sim_VaR99])
+
+#Print results.
+print('97.5% VaR is ' + str(round(historical_sim_VaR975, 2)))
+print('97.5% ES is ' + str(round(historical_sim_ES975, 2)))
+print('99% VaR is ' + str(round(historical_sim_VaR99, 2)))
+print('99% ES is ' + str(round(historical_sim_ES99, 2)))
+
+sns.histplot(df.loss, kde = True)
+plt.show()
