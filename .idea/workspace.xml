@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7b611e09-e461-4a47-b833-77ed2a5de65f" name="Default Changelist" comment="Historical simulation">
+    <list default="true" id="7b611e09-e461-4a47-b833-77ed2a5de65f" name="Default Changelist" comment="VaRCovar working.">
+      <change afterPath="$PROJECT_DIR$/Plots/ewma_var.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots/fhs_backtest.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots/fhs_qq_plot.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots/rets_hist.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots/student_qq_losses.png" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Plots/var_es975CCCn.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Plots/var_es975CCCt.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots/var_es975FH.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots/var_es975VCVn.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots/var_es975VCVt.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Plots/var_es99CCCn.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Plots/var_es99CCCt.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/var_covar.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots/var_es99FH.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots/var_es99VCVn.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Plots/var_es99VCVt.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/VaR_ES.py" beforeDir="false" afterPath="$PROJECT_DIR$/VaR_ES.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/filtered_historical.py" beforeDir="false" afterPath="$PROJECT_DIR$/filtered_historical.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main_maurits.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_maurits.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/var_covar.py" beforeDir="false" afterPath="$PROJECT_DIR$/var_covar.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,6 +35,14 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="ProjectId" id="1qbz4tarKSVQmUgKApVoRvp7mAp" />
   <component name="ProjectLevelVcsManager">
@@ -181,7 +201,7 @@
       <workItem from="1619022626884" duration="117000" />
       <workItem from="1619022778733" duration="21796000" />
       <workItem from="1619109051297" duration="2081000" />
-      <workItem from="1619167055604" duration="83543000" />
+      <workItem from="1619167055604" duration="109133000" />
     </task>
     <task id="LOCAL-00001" summary="Rebalancing.">
       <created>1619024531021</created>
@@ -281,7 +301,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619386538497</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="VaRCovar working.">
+      <created>1619390988460</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1619390988460</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -309,7 +336,8 @@
     <MESSAGE value="CCC function working. Still need to include expected shortfall." />
     <MESSAGE value="Starting on backtesting." />
     <MESSAGE value="Historical simulation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Historical simulation" />
+    <MESSAGE value="VaRCovar working." />
+    <option name="LAST_COMMIT_MESSAGE" value="VaRCovar working." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

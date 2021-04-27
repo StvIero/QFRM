@@ -225,7 +225,7 @@ df['loss'] = aex_val * (1 - np.exp(df.aex_ret)) + nikkei_val * (1 - np.exp(df.ni
 #df.to_csv('/Users/connorstevens/Documents/GitHub/QFRM/Data/loss_df.csv')
 
 ####BACKTESTING
-window = 250
+window = 1000
 var_es975HS = np.zeros((np.shape(df)[0] - window, 3))
 var_es99HS = np.zeros((np.shape(df)[0] - window, 3))
 # es975 = np.zeros((np.shape(df)[0] - window, 3))
