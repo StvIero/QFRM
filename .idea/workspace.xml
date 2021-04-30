@@ -2,26 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7b611e09-e461-4a47-b833-77ed2a5de65f" name="Default Changelist" comment="VaRCovar working.">
-      <change afterPath="$PROJECT_DIR$/Plots/ewma_var.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/fhs_backtest.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/fhs_qq_plot.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/rets_hist.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/student_qq_losses.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es975CCCn.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es975CCCt.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es975FH.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es975VCVn.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es975VCVt.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es99CCCn.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es99CCCt.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es99FH.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es99VCVn.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es99VCVt.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mv_clean_data.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mv_data_clean.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/VaR_ES.py" beforeDir="false" afterPath="$PROJECT_DIR$/VaR_ES.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/filtered_historical.py" beforeDir="false" afterPath="$PROJECT_DIR$/filtered_historical.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main_maurits.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_maurits.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/var_covar.py" beforeDir="false" afterPath="$PROJECT_DIR$/var_covar.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +14,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="constant_correlation" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -79,11 +62,14 @@
       <recent name="$PROJECT_DIR$/Plots" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main_maurits">
+  <component name="RunManager" selected="Python.mv_data_clean">
     <configuration name="QFRM_ass1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="QFRM" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$USER_HOME$/Code/Python/Test" />
       <option name="IS_MODULE_SDK" value="false" />
@@ -103,6 +89,9 @@
       <module name="QFRM" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -144,6 +133,9 @@
       <module name="QFRM" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -178,12 +170,32 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="mv_data_clean" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="QFRM" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/mv_data_clean.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.mv_data_clean" />
+        <item itemvalue="Python.main_maurits" />
         <item itemvalue="Python.main_maurits" />
         <item itemvalue="Python.filtered_historical" />
         <item itemvalue="Python.QFRM_ass1" />
-        <item itemvalue="Python.VaR_ES" />
       </list>
     </recent_temporary>
   </component>
@@ -201,7 +213,11 @@
       <workItem from="1619022626884" duration="117000" />
       <workItem from="1619022778733" duration="21796000" />
       <workItem from="1619109051297" duration="2081000" />
-      <workItem from="1619167055604" duration="109133000" />
+      <workItem from="1619167055604" duration="110716000" />
+      <workItem from="1619775601894" duration="4000" />
+      <workItem from="1619775608158" duration="1000" />
+      <workItem from="1619775611244" duration="10000" />
+      <workItem from="1619775622962" duration="13524000" />
     </task>
     <task id="LOCAL-00001" summary="Rebalancing.">
       <created>1619024531021</created>
@@ -308,7 +324,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619390988460</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="VaRCovar working.">
+      <created>1619510105733</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1619510105734</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -338,22 +361,6 @@
     <MESSAGE value="Historical simulation" />
     <MESSAGE value="VaRCovar working." />
     <option name="LAST_COMMIT_MESSAGE" value="VaRCovar working." />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/filtered_historical.py</url>
-          <line>18</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/filtered_historical.py</url>
-          <line>44</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/QFRM$main_maurits.coverage" NAME="main_maurits Coverage Results" MODIFIED="1619185759195" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
