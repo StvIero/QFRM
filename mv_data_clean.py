@@ -11,6 +11,7 @@ data['nikkei_eur'] =  data.nikkei225 * data['eur/jpy']
 data['nasdaq_eur'] = data.nasdaq * data['eur/usd']
 data['eem_eur'] = data.eem * data['eur/usd']
 data['dbc_eur'] = data.dbc * data['eur/usd']
+data.loc['euribor'] = data['euribor']/100
 
 #Calculate log returns in euros.
 data['nikkei_ret'] =  np.log(data['nikkei225']) - np.log(data['nikkei225'].shift(1))
@@ -18,17 +19,19 @@ data['nasdaq_ret'] = np.log(data['nasdaq']) - np.log(data['nasdaq'].shift(1))
 data['aex_ret'] = np.log(data['aex']) - np.log(data['aex'].shift(1))
 data['eem_ret'] = np.log(data['eem']) - np.log(data['eem'].shift(1))
 data['dbc_ret'] = np.log(data['dbc']) - np.log(data['dbc'].shift(1))
+data['euribor_change'] = data['dbc'] - data['dbc'].shift(1)
 
 #Set initial change to zero.
 data.loc[data.index.values[0], ['nikkei_ret', 'nasdaq_ret', 'aex_ret', 'eem_ret', 'dbc_ret']] = 0
 
 #Daily portfolio loss column.
-data['loss'] = -(25 * data.nikkei_ret + 25 * data.nasdaq_ret + 25 * data.aex_ret + 25 * data.eem_ret + 25 * data.dbc_ret - 25 * data.euribor)
+data['loss'] = -(0.25 * np.exp(data.nikkei_ret) + 0.25 * np.exp(data.nasdaq_ret) + 0.25 * np.exp(data.aex_ret) + 0.25 * np.exp(data.eem_ret) + 0.25 * np.exp(data.dbc_ret) - 0.25 * np.exp(data.euribor + 0.02)
 
-data.to_csv('/Users/connorstevens/Documents/GitHub/qfrm_code/mv_clean_data.csv')
+#data.to_csv('/Users/connorstevens/Documents/GitHub/qfrm_code/mv_clean_data.csv')
 
 #Specify which years are to be used for VaR and ES calculations.
 test = data["2013-03-25":"2015-03-17"]
+
 #Calculte Value-at-Risk based on historical simulation.
 historical_sim_VaR975 = np.quantile(test['loss'][1:], 0.975)
 historical_sim_VaR99 = np.quantile(test['loss'][1:], 0.99)
