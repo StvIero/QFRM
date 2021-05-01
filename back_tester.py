@@ -12,9 +12,10 @@ Created on Fri Apr 30 12:04:04 2021
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
+#import seaborn as sns
 from scipy import stats
 import statsmodels.api as sm
+import matplotlib.dates as mdates
 
 # import data to test with, its the function that we're interested in:
 dframe = pd.read_csv(r'C:\Users\gebruiker\Desktop\VU\Master\QFRM\var_es975CCCn.csv', index_col=0)
@@ -43,12 +44,31 @@ def backtester_indate(df, alpha, g_label):
         
         print(t,':')
         print()
-        print('amount of violations is ', nr_vios, 'out of a total length', len(subset['vio']))
+        print('amount of violations is ', nr_vios, ', ratio is', nr_vios/len(subset['vio']))
         print('p-value is ', stats.binom_test(nr_vios, n=len(subset['vio']), p=alpha, alternative='greater'))
         
         # now we are gonna get actual shortfall
         print('realized shortfall is', np.mean(subset.loc[subset['diff']<0, '2']))
         print()
+    
+    
+    
+    # lets also do a plot of rets and VaR values...
+    index = pd.to_datetime(df.iloc[1:-1, 3])
+    print(type(index))
+    
+    #fig, ax = plt.subplot()
+    plt.plot(index, df.iloc[1:-1, 0], label='VaR')
+    plt.plot(index, df.iloc[1:-1, 1], label='ES')
+    plt.plot(index, df.iloc[1:-1, 2], alpha=0.5, label='Return')
+    plt.legend()
+    
+    #plt.xaxis.set_tick_params(reset=True)
+    #plt.xaxis.set_major_locator(mdates.YearLocator(1))
+    #plt.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+
+    
+    
     
     # now we will plot some graphs for visual testing
     loi = []
@@ -57,18 +77,8 @@ def backtester_indate(df, alpha, g_label):
             loi.append(i)
     
     indiffs = np.array(loi)[1:] - np.array(loi)[:-1]
-    
     # now for the QQplot:
     sm.qqplot(indiffs, stats.expon,fit=True, line='45', label= g_label)
-    
-    # lets also do a plot of rets and VaR values...
-    index = pd.to_datetime(df.iloc[1:-1, 3].values)
-    print(type(index))
-    
-    plt.plot(index, df.iloc[1:-1, 0], label='VaR')
-    plt.plot(index, df.iloc[1:-1, 1], label='ES')
-    plt.plot(index, df.iloc[1:-1, 2], label='Return')
-    plt.legend()
     
     return df
 
