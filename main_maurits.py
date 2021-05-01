@@ -226,7 +226,7 @@ End of rebalancing code/data is done for now
 # actual assignment part
 ###############################################################################
 """
-
+"""
 def ST_VAR_ES(nu, SD_port):
     sigma = SD_port / np.sqrt(nu/(nu-2))
     VaR975 = (average_port_ret + t.ppf(0.025, nu, 0, 1)*sigma)*port_value*-1
@@ -287,54 +287,181 @@ for i in [3,4,5,6]:
 
 # get QQ-plot to compare to normal dist -- obviously fat fails...
 sm.qqplot(df_re['equity_ret']/np.std(df_re['equity_ret']), line='45')
-
+"""
 # make var covar function that puts out VaR and ES, after whatever thing you put out
 def VAR_COVAR(logrets, assetvalues, start, stop, alpha, dist, nu):
     # assume start, stop are index values, the rest is obvi
     # fill in alpha as 0.025 or 0.01, log rets are not multiplied by -1 yet
-    logrets = logrets.iloc[start:stop,:]
+    rets = logrets.iloc[start:stop,:]
     assetvalues = assetvalues.iloc[start:stop,:]
     
     # get port std dev
     rel_weights = np.array([0.6,0.6,0.3,-0.5])
-    wvol1 = rel_weights[0]**2*np.std(logrets.iloc[:,0])
-    wvol2 = rel_weights[1]**2*np.std(logrets.iloc[:,1])
-    wvol3 = rel_weights[2]**2*np.std(logrets.iloc[:,2])
-    wvol4 = rel_weights[3]**2*np.std(logrets.iloc[:,3])
+    wvol1 = rel_weights[0]**2*np.std(rets.iloc[:,0])
+    wvol2 = rel_weights[1]**2*np.std(rets.iloc[:,1])
+    wvol3 = rel_weights[2]**2*np.std(rets.iloc[:,2])
+    wvol4 = rel_weights[3]**2*np.std(rets.iloc[:,3])
     
-    wcov_jn = 2*rel_weights[0]*rel_weights[1]*np.cov(logrets.iloc[:,0], logrets.iloc[:,1])[0,1]
-    wcov_ja = 2*rel_weights[0]*rel_weights[2]*np.cov(logrets.iloc[:,0], logrets.iloc[:,2])[0,1]
-    wcov_na = 2*rel_weights[1]*rel_weights[2]*np.cov(logrets.iloc[:,1], logrets.iloc[:,2])[0,1]
-    wcov_jl = 2*rel_weights[0]*rel_weights[3]*np.cov(logrets.iloc[:,0], logrets.iloc[:,3])[0,1]
-    wcov_al = 2*rel_weights[1]*rel_weights[3]*np.cov(logrets.iloc[:,1], logrets.iloc[:,3])[0,1]
-    wcov_nl = 2*rel_weights[2]*rel_weights[3]*np.cov(logrets.iloc[:,2], logrets.iloc[:,3])[0,1]
+    wcov_jn = 2*rel_weights[0]*rel_weights[1]*np.cov(rets.iloc[:,0], rets.iloc[:,1])[0,1]
+    wcov_ja = 2*rel_weights[0]*rel_weights[2]*np.cov(rets.iloc[:,0], rets.iloc[:,2])[0,1]
+    wcov_na = 2*rel_weights[1]*rel_weights[2]*np.cov(rets.iloc[:,1], rets.iloc[:,2])[0,1]
+    wcov_jl = 2*rel_weights[0]*rel_weights[3]*np.cov(rets.iloc[:,0], rets.iloc[:,3])[0,1]
+    wcov_al = 2*rel_weights[1]*rel_weights[3]*np.cov(rets.iloc[:,1], rets.iloc[:,3])[0,1]
+    wcov_nl = 2*rel_weights[2]*rel_weights[3]*np.cov(rets.iloc[:,2], rets.iloc[:,3])[0,1]
     
     vol_port = np.sqrt(wvol1 + wvol2 + wvol3 + wvol4 + wcov_jn + wcov_ja + wcov_na + wcov_jl+ wcov_al+ wcov_nl)
     
     avgret_port=0
-    for i in range(len(logrets.columns)):
-        logrets.iloc[:,i] *= rel_weights[i]
-        avgret_port += np.mean(logrets.iloc[:,i])
+    for i in range(len(rets.columns)):
+        rets.iloc[:,i] *= rel_weights[i]
+        avgret_port += np.mean(rets.iloc[:,i])
     
-    print(avgret_port)
     port_value = 100000000
     
     if dist=='normal':
         VaR = (avgret_port + norm.ppf(alpha)*vol_port)*port_value*-1
         ES = (avgret_port - norm.pdf(norm.ppf(alpha))/(alpha) * vol_port) * port_value*-1
     elif dist=='student':
-        sigma = vol_port / np.sqrt(nu/(nu-2))
+        sigma = vol_port #/ np.sqrt(nu/(nu-2))
         VaR = (avgret_port + t.ppf(alpha, nu, 0, 1)*sigma)*port_value*-1
         
         frac11 = (nu+(t.ppf(alpha, nu, 0, 1))**2)/(nu-1)
         frac12 = t.pdf(t.ppf(alpha, nu, 0, 1), nu, 0, 1)/(alpha)
-        ES = (average_port_ret - sigma*frac11*frac12)*port_value*-1
-        
-        
+        ES = (avgret_port - sigma*frac11*frac12)*port_value*-1
+    
+    
+    print(avgret_port)
+    #print(vol_port)
     # then get VAR and ESs based on alpha xddddd
     return VaR, ES
 
 
-logrets = df[['jse_ret', 'nikkei_ret', 'aex_ret', 'libor_change']]
-assetvalues = df[['nikkei_eur', 'jse_eur', 'aex']]
-print(VAR_COVAR(logrets, assetvalues, 0, 299, 0.025, 'student', 10000000000))
+
+def CCC(df, alpha, dist, DoF, VaRES):
+
+#Multiplied all returns by 100 due to errors form GARCH function.
+    #Fit AEX GARCH model.
+    
+
+    #Pull variance forecasts out of lists.
+    aex_var = np.std(df['aex_ret'])**2
+    nikkei_var = np.std(df['nikkei_ret'])**2
+    jse_var = np.std(df['jse_ret'])**2
+    libor_var = np.std(df['libor_change'])**2
+    
+    #Store asset variances.
+    asset_var = np.array([aex_var, nikkei_var, jse_var, libor_var])
+
+
+    #Create correlation matrix which will be held constant.
+    #df['port_var'] = np.zeros(len(df['aex_ret']))
+    port_corr = np.array(df[['aex_ret', 'nikkei_ret', 'jse_ret', 'libor']].corr())
+    weights = np.array([0.6, 0.6, 0.3, -0.5])
+
+    #Create covariance matrix to fill.
+    port_covar = np.zeros((4,4))
+    for j in range(0, 3):
+        for i in range(0, 3):
+            port_covar[i, j] = port_corr[i,j] * asset_var[i] * asset_var[j]
+
+        #Calculate portfolio variance.
+    portvar = np.dot(weights.T, np.dot(port_covar, weights))
+
+    mean_rets = np.array(df[['aex_ret', 'nikkei_ret', 'jse_ret', 'libor']].dropna().mean(axis=0))
+    port_ret = np.dot(mean_rets, weights)
+    port_vol = np.sqrt(portvar)
+
+    # VaR normal or student-t.
+    value_port = 100_000_000
+    if (dist == 'normal'):
+        VaR = (port_ret - norm.ppf(alpha) * port_vol) * value_port * -1
+    elif(dist == 'student-t'):
+        VaR = (port_ret - t.ppf(alpha, DoF) * port_vol) * value_port * -1
+
+    if (dist == 'normal'):
+        ES = (port_ret - norm.pdf(norm.ppf((1-alpha))/(1-alpha) * port_vol) * value_port*-1)
+
+    elif(dist == 'student-t'):
+        frac11 = (DoF + (t.ppf((1- alpha), DoF))** 2) / (DoF - 1)
+
+        frac12 = t.pdf(t.ppf((1- alpha), DoF), DoF, 0, 1) / (alpha)
+
+        ES = (port_ret - port_vol * frac11 * frac12) * value_port * -1
+
+    if VaRES == 'VaR':
+        return (VaR)
+
+    elif VaRES == 'ES':
+        return (ES)
+
+
+
+
+
+print(CCC(df.iloc[300:600,:], 0.99, 'student-t', 3.5, 'VaR'))
+print(CCC(df.iloc[300:600,:], 0.99, 'student-t', 3.5, 'ES'))
+
+
+
+url = "https://raw.githubusercontent.com/EarlGreyIsBae/QFRM/absolute_weights_df/Data/loss_df.csv"
+download = requests.get(url).content
+df2 = pd.read_csv(io.StringIO(download.decode('utf-8')))
+
+#df = pd.read_csv(r'C:\Users\gebruiker\Desktop\VU\Master\QFRM\var_es975CCCn.csv', index_col=0)
+#df = pd.read_csv(r'C:\Users\gebruiker\Desktop\VU\Master\QFRM\var_es975CCCt.csv', index_col=0)
+#df = pd.read_csv(r'C:\Users\gebruiker\Desktop\VU\Master\QFRM\var_es99CCCn.csv', index_col=0)
+df = pd.read_csv(r'C:\Users\gebruiker\Desktop\VU\Master\QFRM\var_es99CCCt.csv', index_col=0)
+
+df.iloc[:,2] = np.array(df2.iloc[250:,13])
+window = 250
+
+
+index = pd.to_datetime(df2.iloc[251:, 0])
+plt.plot(index, np.array(df.iloc[1:, 0]), label = '97.5% VaR')
+plt.plot(index, np.array(df.iloc[1:, 1]), label = '97.5% ES')
+plt.plot(index, np.array(df.iloc[1:, 2]), alpha = 0.5, label = 'Returns')
+plt.ylabel('Losses (Euros)')
+plt.xlabel('Date')
+plt.legend()
+plt.show()
+
+df['diff'] = df.iloc[:,0] - df.iloc[:,2]
+
+counter =0
+for i in range(len(df)):
+    if df.iloc[i,3]<0:
+        counter +=1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# =============================================================================
+# # 10 day - VaR, ES 
+# nan_vec = np.full([len(logrets),1], np.nan)
+# logrets['jse10'] = nan_vec
+# logrets['nik10'] = nan_vec
+# logrets['aex10'] = nan_vec
+# logrets['lib10'] = nan_vec
+#  
+# logrets['jse5'] = nan_vec
+# logrets['nik5'] = nan_vec
+# logrets['aex5'] = nan_vec
+# logrets['lib5'] = nan_vec  
+# 
+# d10rets = logrets[['jse10', 'nik10', 'aex10', 'lib10']]
+# d5rets = logrets[['jse5', 'nik5', 'aex5', 'lib5']]
+#     
+# =============================================================================
+    
+    
