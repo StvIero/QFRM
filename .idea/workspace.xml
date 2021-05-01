@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7b611e09-e461-4a47-b833-77ed2a5de65f" name="Default Changelist" comment="clean data and get historical simulation working." />
+    <list default="true" id="7b611e09-e461-4a47-b833-77ed2a5de65f" name="Default Changelist" comment="clean data and get historical simulation working.">
+      <change afterPath="$PROJECT_DIR$/mv/backtest/var_es975VCVn.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mv/backtest/var_es975VCVt.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mv/backtest/var_es99VCVn.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mv/backtest/var_es99VCVt.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mv/mv_clean_data.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mv/mv_data_clean.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mv/plots/VCV_bt.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mv_clean_data.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mv_data_clean.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/var_covar.py" beforeDir="false" afterPath="$PROJECT_DIR$/var_covar.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -37,7 +49,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/Plots" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/mv/plots" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -55,6 +67,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/mv/plots" />
       <recent name="$PROJECT_DIR$/Plots" />
     </key>
   </component>
@@ -151,6 +164,9 @@
       <module name="QFRM" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -170,6 +186,9 @@
       <module name="QFRM" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -213,7 +232,8 @@
       <workItem from="1619775601894" duration="4000" />
       <workItem from="1619775608158" duration="1000" />
       <workItem from="1619775611244" duration="10000" />
-      <workItem from="1619775622962" duration="17010000" />
+      <workItem from="1619775622962" duration="21263000" />
+      <workItem from="1619878956032" duration="5971000" />
     </task>
     <task id="LOCAL-00001" summary="Rebalancing.">
       <created>1619024531021</created>
@@ -341,7 +361,14 @@
       <option name="project" value="LOCAL" />
       <updated>1619873224322</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="clean data and get historical simulation working.">
+      <created>1619873289888</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1619873289888</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
