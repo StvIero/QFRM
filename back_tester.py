@@ -18,9 +18,11 @@ import statsmodels.api as sm
 import matplotlib.dates as mdates
 
 # import data to test with, its the function that we're interested in:
-dframe = pd.read_csv(r'C:\Users\gebruiker\Desktop\VU\Master\QFRM\var_es975CCCn.csv', index_col=0)
-dframe['Date'] = pd.date_range(start='1/1/2012', periods=len(dframe), freq='D') # get pseudo dates to test with
-
+df975 = pd.read_csv(r'C:\Users\gebruiker\Desktop\VU\Master\QFRM\D&A_975.csv', index_col=0)
+df975['Date'] = pd.to_datetime(df975['Date'])
+    
+df99 = pd.read_csv(r'C:\Users\gebruiker\Desktop\VU\Master\QFRM\D&A_99.csv', index_col=0)
+df99['Date'] = pd.to_datetime(df99['Date'])
 
 
 
@@ -55,13 +57,13 @@ def backtester_indate(df, alpha, g_label):
     
     # lets also do a plot of rets and VaR values...
     index = pd.to_datetime(df.iloc[1:-1, 3])
-    print(type(index))
+    #print(type(index))
     
-    #fig, ax = plt.subplot()
-    plt.plot(index, df.iloc[1:-1, 0], label='VaR')
-    plt.plot(index, df.iloc[1:-1, 1], label='ES')
-    plt.plot(index, df.iloc[1:-1, 2], alpha=0.5, label='Return')
-    plt.legend()
+    fig, ax = plt.subplots()
+    ax.plot(index, df.iloc[1:-1, 1], label='ES')
+    ax.plot(index, df.iloc[1:-1, 0], label='VaR')
+    ax.plot(index, df.iloc[1:-1, 2], alpha=0.5, label='Return')
+    ax.legend()
     
     #plt.xaxis.set_tick_params(reset=True)
     #plt.xaxis.set_major_locator(mdates.YearLocator(1))
@@ -83,7 +85,12 @@ def backtester_indate(df, alpha, g_label):
     return df
 
 
-test = backtester_indate(dframe, 0.01, '97.5% VaR historical simulation')
+#test975 = backtester_indate(df975, 0.025, '97.5% VaR historical simulation')
+test99 = backtester_indate(df99, 0.01, '99% VaR hisorical simulation')
+
+
+
+
 
 
 
