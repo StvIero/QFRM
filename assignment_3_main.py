@@ -10,7 +10,10 @@ Created on Tue May  4 11:50:54 2021
 
 # packages and set directory
 import os
-os.chdir(r"C:\Users\gebruiker\Documents\GitHub\QFRM")
+os.chdir(r"C:\Users\gebruiker\Documents\GitHub\QFRM") # necessary to get dataloader function
 from data_puller3000 import DataPuller_assignment3 # get dataloader function
 
 df = DataPuller_assignment3() # get data
+
+# start PCA analysis here:
+
