@@ -9,14 +9,15 @@ Created on Mon May  3 15:50:57 2021
 
 def DataPuller_assignment3():
     # specify packages just in case:
+    import numpy as np
+    import pandas as pd
     from pandas_datareader import data as pdr
     from datetime import date
     import yfinance as yf
     yf.pdr_override()
-    import pandas as pd
     # hardcode all the arguments bc one assignment anyways
     ticker_list = ['ASML.AS', 'SONY', 'AKZA.AS', 'BAYN.DE', 'TSN', 'NTDOY', 'SQNXF', 'AMD','CSGN.SW', 'MUFG']
-    today = date.today()
+
     start_date = '2011-04-20'
     end_date = '2021-04-20'
     files = []
@@ -49,12 +50,26 @@ def DataPuller_assignment3():
         
         # now join those df1s to df for master dataset to get 
         df = pd.merge(df, df1, how='left', on=['Date'])
+    
+    # clean it up a bit, remove nans by ffill
+    df = df.iloc[1:,:]
+    df = df.ffill(axis=0)
+
+    # get log returns for every ticker
+    
+    for tic in df.columns[1:]:
+        df[tic+'_ret'] = np.log(df[tic]) - np.log(df[tic].shift(1))
         
-    print(df.head(1))
+    # get some portfolio returns, assume average weight...
+    df['port_ret'] = df.iloc[:,len(ticker_list)+1:len(df.columns)].mean(axis=1)
+    
     return df
 
 
 
 df = DataPuller_assignment3()
 df.to_csv(r"C:\Users\gebruiker\Documents\GitHub\QFRM\Data3\data_main.csv")
+
+
+
 
