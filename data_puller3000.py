@@ -27,7 +27,7 @@ def DataPuller_assignment3():
     end_date = '2021-04-20'
     files = []
     
-    # check if function has run before:
+    # check if function has run/downloaded stuff before:
     if 'data_main.csv' in os.listdir(r"C:\Users\gebruiker\Documents\GitHub\QFRM\Data3\\"):
         df = pd.read_csv(r"C:\Users\gebruiker\Documents\GitHub\QFRM\Data3\data_main.csv",index_col=0)
         
