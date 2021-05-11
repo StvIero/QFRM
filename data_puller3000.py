@@ -74,11 +74,12 @@ def DataPuller_assignment3():
         df['port_ret'] = df.iloc[:,len(ticker_list)+1:len(df.columns)+1].mean(axis=1)
         df.to_csv(path+'data_main.csv')
     
-    return df
+    dfrets = df.iloc[1:,len(ticker_list)+1:len(df.columns)-1]
+    return df, dfrets
 
 
 
-df = DataPuller_assignment3()
+df, dfrets = DataPuller_assignment3()
 
 
 
