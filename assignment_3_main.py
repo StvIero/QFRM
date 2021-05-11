@@ -15,7 +15,7 @@ from data_puller3000 import DataPuller_assignment3 # get dataloader function
 
 
 # start PCA analysis here, kinda want to have it set up in a way so i can automate it more easily next time:
-def PCA(df, ticker_list):
+def PCA(df):
     # packages again:
     from sklearn.decomposition import PCA
     import pandas as pd
@@ -57,36 +57,37 @@ def PCA(df, ticker_list):
 
 
 
-def FA(dfrets, tickerlist):
+def FA(dfrets):
     # packages again:
     import pandas as pd
-    import numpy as np
     import matplotlib.pyplot as plt
-    from sklearn.decomposition import SparsePCA
     from sklearn.decomposition import FactorAnalysis
     
-    
-    fa = FactorAnalysis(n_components=len(dfrets.columns), random_state=0)
+    # fit
+    fa = FactorAnalysis(n_components=7,rotation='varimax')
     fa_fit = fa.fit(dfrets)
     loadings = pd.DataFrame(fa_fit.components_)
-    loadingsneg = loadings*-1
-
+    loadings_t = loadings.transpose()
+    loadingsneg = loadings_t*-1
+    
+    print(loadings)
+    # plot
     fig,axs = plt.subplots(2,3)
-    axs[0,0].bar(x= loadings.index.values, height=loadingsneg.iloc[:,1],label='pc1')
-    axs[0,1].bar(x= loadings.index.values, height=loadingsneg.iloc[:,2],label='pc2')
-    axs[0,2].bar(x= loadings.index.values, height=loadingsneg.iloc[:,3],label='pc3')
-    axs[1,0].bar(x= loadings.index.values, height=loadingsneg.iloc[:,4],label='pc4')
-    axs[1,1].bar(x= loadings.index.values, height=loadingsneg.iloc[:,5],label='pc5')
-    axs[1,2].bar(x= loadings.index.values, height=loadingsneg.iloc[:,6],label='pc6') # overlap but plox
+    axs[0,0].bar(x= loadings_t.index.values, height=loadingsneg.iloc[:,1],label='pc1')
+    axs[0,1].bar(x= loadings_t.index.values, height=loadingsneg.iloc[:,2],label='pc2')
+    axs[0,2].bar(x= loadings_t.index.values, height=loadingsneg.iloc[:,3],label='pc3')
+    axs[1,0].bar(x= loadings_t.index.values, height=loadingsneg.iloc[:,4],label='pc4')
+    axs[1,1].bar(x= loadings_t.index.values, height=loadingsneg.iloc[:,5],label='pc5')
+    axs[1,2].bar(x= loadings_t.index.values, height=loadingsneg.iloc[:,6],label='pc6') # overlap but plox
     plt.tight_layout()
     
     #print(np.cumsum(fa_fit.explained_variance_ratio))
     
-    return loadings
+    return loadings_t
 
 
 
-def Biv_copulas(dfrets, tickerlist, copula_dist):
+def Biv_copulas(dfrets, copula_dist):
     # copula_dist can be:
     # [normal, student, clayton, frank, gumbel]
     
@@ -104,43 +105,47 @@ def Biv_copulas(dfrets, tickerlist, copula_dist):
 
         if copula_dist == 'normal':
             from copulae import GaussianCopula
-            g_cop = GaussianCopula(dim=ndim)
-            g_cop.fit(dfcop)
-            print('params are', g_cop.params)
+            cop = GaussianCopula(dim=ndim)
+            cop.fit(dfcop)
+            print('params are', cop.params)
             
         elif copula_dist == 'student':
             from copulae import StudentCopula
-            t_cop = StudentCopula(dim=ndim)
-            t_cop.fit(dfcop)
-            print('params are', t_cop.params)
+            cop = StudentCopula(dim=ndim)
+            cop.fit(dfcop)
+            print('params are', cop.params)
             
         elif copula_dist == 'clayton':
             from copulae import ClaytonCopula
-            c_cop = ClaytonCopula(dim=ndim)
-            c_cop.fit(dfcop)
-            print('params are', c_cop.params)
+            cop = ClaytonCopula(dim=ndim)
+            cop.fit(dfcop)
+            print('params are', cop.params)
             
         elif copula_dist == 'frank':
             from copulae import FrankCopula
-            f_cop = FrankCopula(dim=ndim)
-            f_cop.fit(dfcop)
-            print('params are', f_cop.params)
+            cop = FrankCopula(dim=ndim)
+            cop.fit(dfcop)
+            print('params are', cop.params)
             
         elif copula_dist == 'gumbel':
             from copulae import GumbelCopula
-            g_cop = GumbelCopula(dim=ndim)
-            g_cop.fit(dfcop)
-            print('params are', g_cop.params)
+            cop = GumbelCopula(dim=ndim)
+            cop.fit(dfcop)
+            print('params are', cop.params)
             
-    return dfcop
+    print('log lik =', cop._fit_smry.log_lik)
+    return cop
 
+
+def EVT(dfrets):
+    
+    return 'This function is not complete yet...'
 '''====================================== RUN HERE =================================='''
 
 df,dfrets = DataPuller_assignment3() # get data
+dfrets_flip = dfrets.iloc[:, ::-1]
 
-test = FA(dfrets, 1)
-
-loadings, pca_fit = PCA(dfrets, 1)
+test = Biv_copulas(dfrets, 'student')
 
 
 
