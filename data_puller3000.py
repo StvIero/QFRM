@@ -47,7 +47,7 @@ def DataPuller_assignment3():
             getData(tik)
         
         
-        df = pd.read_csv(path+str(files[1])+".csv")
+        df = pd.read_csv(path+str(files[0])+".csv")
         df[str(files[0])] = df['Adj Close']
         # filter df on adjclose and date:
         df = df.iloc[:,list([0,-1])]

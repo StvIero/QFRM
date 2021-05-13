@@ -14,6 +14,10 @@ os.chdir(r"C:\Users\gebruiker\Documents\GitHub\QFRM") # necessary to get dataloa
 from data_puller3000 import DataPuller_assignment3 # get dataloader function
 
 
+def sumstats(dfrets):
+    import numpy as np
+    return dfrets.describe()
+
 # start PCA analysis here, kinda want to have it set up in a way so i can automate it more easily next time:
 def PCA(df):
     # packages again:
@@ -143,11 +147,10 @@ def EVT(dfrets):
 '''====================================== RUN HERE =================================='''
 
 df,dfrets = DataPuller_assignment3() # get data
-dfrets_flip = dfrets.iloc[:, ::-1]
+#dfrets_flip = dfrets.iloc[:, ::-1]
+#test = Biv_copulas(dfrets, 'student')
 
-test = Biv_copulas(dfrets, 'student')
-
-
+sumobject = sumstats(dfrets)
 
 
 
