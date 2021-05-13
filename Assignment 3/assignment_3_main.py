@@ -9,8 +9,9 @@ Created on Tue May  4 11:50:54 2021
 """
 
 # packages and set directory
+import copulas
 import os
-os.chdir(r"C:\Users\gebruiker\Documents\GitHub\QFRM") # necessary to get dataloader function
+os.chdir("/Users/connorstevens/Documents/GitHub/qfrm_code") # necessary to get dataloader function
 from data_puller3000 import DataPuller_assignment3 # get dataloader function
 
 
