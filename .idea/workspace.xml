@@ -2,26 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7b611e09-e461-4a47-b833-77ed2a5de65f" name="Default Changelist" comment="VaRCovar working.">
-      <change afterPath="$PROJECT_DIR$/Plots/ewma_var.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/fhs_backtest.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/fhs_qq_plot.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/rets_hist.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/student_qq_losses.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es975CCCn.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es975CCCt.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es975FH.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es975VCVn.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es975VCVt.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es99CCCn.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es99CCCt.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es99FH.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es99VCVn.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Plots/var_es99VCVt.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/VaR_ES.py" beforeDir="false" afterPath="$PROJECT_DIR$/VaR_ES.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/filtered_historical.py" beforeDir="false" afterPath="$PROJECT_DIR$/filtered_historical.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main_maurits.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_maurits.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/var_covar.py" beforeDir="false" afterPath="$PROJECT_DIR$/var_covar.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,6 +65,9 @@
       <module name="QFRM" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$USER_HOME$/Code/Python/Test" />
       <option name="IS_MODULE_SDK" value="false" />
@@ -103,6 +87,9 @@
       <module name="QFRM" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -144,6 +131,9 @@
       <module name="QFRM" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -163,6 +153,9 @@
       <module name="QFRM" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -202,6 +195,7 @@
       <workItem from="1619022778733" duration="21796000" />
       <workItem from="1619109051297" duration="2081000" />
       <workItem from="1619167055604" duration="109133000" />
+      <workItem from="1620300702302" duration="1223000" />
     </task>
     <task id="LOCAL-00001" summary="Rebalancing.">
       <created>1619024531021</created>

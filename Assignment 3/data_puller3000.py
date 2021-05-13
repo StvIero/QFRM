@@ -27,7 +27,7 @@ def DataPuller_assignment3():
     end_date = '2021-04-20'
     files = []
     
-    # check if function has run before:
+    # check if function has run/downloaded stuff before:
     if 'data_main.csv' in os.listdir(r"C:\Users\gebruiker\Documents\GitHub\QFRM\Data3\\"):
         df = pd.read_csv(r"C:\Users\gebruiker\Documents\GitHub\QFRM\Data3\data_main.csv",index_col=0)
         
@@ -47,7 +47,7 @@ def DataPuller_assignment3():
             getData(tik)
         
         
-        df = pd.read_csv(path+str(files[1])+".csv")
+        df = pd.read_csv(path+str(files[0])+".csv")
         df[str(files[0])] = df['Adj Close']
         # filter df on adjclose and date:
         df = df.iloc[:,list([0,-1])]
@@ -74,11 +74,12 @@ def DataPuller_assignment3():
         df['port_ret'] = df.iloc[:,len(ticker_list)+1:len(df.columns)+1].mean(axis=1)
         df.to_csv(path+'data_main.csv')
     
-    return df
+    dfrets = df.iloc[1:,len(ticker_list)+1:len(df.columns)-1]
+    return df, dfrets
 
 
 
-df = DataPuller_assignment3()
+df, dfrets = DataPuller_assignment3()
 
 
 
