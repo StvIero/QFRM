@@ -16,6 +16,10 @@ from data_puller3000 import DataPuller_assignment3 # get dataloader function
 
 def sumstats(dfrets):
     import numpy as np
+    import scipy.stats as stats
+    for i in dfrets.columns:
+        print(str(i)+': ', stats.kurtosis(dfrets[i]))
+    
     return dfrets.describe()
 
 # start PCA analysis here, kinda want to have it set up in a way so i can automate it more easily next time:
@@ -151,7 +155,6 @@ df,dfrets = DataPuller_assignment3() # get data
 #test = Biv_copulas(dfrets, 'student')
 
 sumobject = sumstats(dfrets)
-
 
 
 
