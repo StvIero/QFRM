@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from arch import arch_model
 from scipy import stats
-
+copy
 #Import loss dataframe.
 data = pd.read_csv('/Users/connorstevens/Documents/GitHub/QFRM/Data/loss_df.csv', index_col= 0)
 

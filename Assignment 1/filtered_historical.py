@@ -40,25 +40,25 @@ def FHS(df, alpha, sig_window, lamb, VaRES):
     sig_forecast = np.zeros(4)
     sig_forecast = np.array(lamb * df[['aex_ewmavar', 'nikkei_ewmavar', 'jse_ewmavar', 'libor_ewmavar']].iloc[-1]) + np.array((1 - lamb) * np.square(df[['aex_ret', 'nikkei_ret', 'jse_ret', 'libor']].iloc[-1]))
 
-    ##Plot vol.
-    # # Create figure and plot space
-    # fig1, ax = plt.subplots()
-    #
-    # # Add x-axis and y-axis
-    # ax.plot(pd.to_datetime(df.index.values), 100 * np.sqrt(df[['aex_ewmavar', 'nikkei_ewmavar', 'jse_ewmavar', 'libor_ewmavar']]), label = ['AEX variance', 'Nikkei variance', 'JSE variance', 'LIBOR variance'])
-    #
-    # # Set title and labels for axes
-    # ax.set(xlabel="Date",
-    #        ylabel="EWMA Volatility Forecast(%)")
-    #
-    # # Define the date format
-    # date_form = mdates.DateFormatter("%Y")
-    # ax.xaxis.set_major_formatter(date_form)
-    #
-    # # Ensure a major tick for each week using (interval=1)
-    # ax.xaxis.set_major_locator(mdates.YearLocator())
-    # fig1.legend()
-    # fig1.show()
+    #Plot vol.
+    # Create figure and plot space
+    fig1, ax = plt.subplots()
+
+    # Add x-axis and y-axis
+    ax.plot(pd.to_datetime(df.index.values), 100 * np.sqrt(df[['aex_ewmavar', 'nikkei_ewmavar', 'jse_ewmavar', 'libor_ewmavar']]), label = ['AEX variance', 'Nikkei variance', 'JSE variance', 'LIBOR variance'])
+
+    # Set title and labels for axes
+    ax.set(xlabel="Date",
+           ylabel="EWMA Volatility Forecast(%)")
+
+    # Define the date format
+    date_form = mdates.DateFormatter("%Y")
+    ax.xaxis.set_major_formatter(date_form)
+
+    # Ensure a major tick for each week using (interval=1)
+    ax.xaxis.set_major_locator(mdates.YearLocator())
+    fig1.legend()
+    fig1.show()
 
     #Calculate Zhat values.
 
