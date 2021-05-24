@@ -11,7 +11,7 @@ Created on Tue May  4 11:50:54 2021
 # packages and set directory
 import copulas
 import os
-os.chdir("/Users/connorstevens/Documents/GitHub/qfrm_code") # necessary to get dataloader function
+os.chdir(r"C:\Users\gebruiker\Documents\GitHub\QFRM\Assignment 3") # necessary to get dataloader function
 from data_puller3000 import DataPuller_assignment3 # get dataloader function
 
 
@@ -33,7 +33,7 @@ def PCA(df):
         
     ticker_list = ['ASML.AS', 'SONY', 'AKZA.AS', 'BAYN.DE', 'TSN', 'NTDOY', 'SQNXF', 'AMD','CSGN.SW', 'MUFG']    
     # now just use PCA analysis on the dfrets to see some dependencies:
-    pca = PCA(n_components='mle', svd_solver = 'full', )
+    pca = PCA(n_components=10, svd_solver = 'full') #n_components='mle',
     pca_fit = pca.fit(dfrets)
     
     loadings = pd.DataFrame(pca.components_)
@@ -50,19 +50,44 @@ def PCA(df):
     
     
     # some barplots menn
-    loadingsneg = loadings*-1
+    loadingsneg = loadings#*-1
+    loadingsnegT = loadingsneg.transpose()
+    lables = dfrets.columns
 
-    fig,axs = plt.subplots(2,3)
-    axs[0,0].bar(x= loadings.index.values, height=loadingsneg.iloc[:,1],label='pc1')
-    axs[0,1].bar(x= loadings.index.values, height=loadingsneg.iloc[:,2],label='pc2')
-    axs[0,2].bar(x= loadings.index.values, height=loadingsneg.iloc[:,3],label='pc3')
-    axs[1,0].bar(x= loadings.index.values, height=loadingsneg.iloc[:,4],label='pc4')
-    axs[1,1].bar(x= loadings.index.values, height=loadingsneg.iloc[:,5],label='pc5')
-    axs[1,2].bar(x= loadings.index.values, height=loadingsneg.iloc[:,6],label='pc6') # overlap but plox
+    fig,axs = plt.subplots(2,3,figsize=(10,8))
+    axs[0,0].bar(x= loadingsnegT.index.values, height=loadingsnegT.iloc[:,0],label='pc1')
+    axs[0,0].set_title('PC1')
+    axs[0,1].bar(x= loadingsnegT.index.values, height=loadingsnegT.iloc[:,1],label='pc2')
+    axs[0,1].set_title('PC2')
+    axs[0,2].bar(x= loadingsnegT.index.values, height=loadingsnegT.iloc[:,2],label='pc3')
+    axs[0,2].set_title('PC3')
+    axs[1,0].bar(x= loadingsnegT.index.values, height=loadingsnegT.iloc[:,3],label='pc4')
+    axs[1,0].set_title('PC4')
+    axs[1,1].bar(x= loadingsnegT.index.values, height=loadingsnegT.iloc[:,4],label='pc5')
+    axs[1,1].set_title('PC5')
+    axs[1,2].bar(x= loadingsnegT.index.values, height=loadingsnegT.iloc[:,5],label='pc6') # overlap but plox
+    axs[1,2].set_title('PC6')
+    
+    plt.sca(axs[0, 0])
+    plt.xticks(loadingsnegT.index.values, lables, rotation=90)
+    plt.sca(axs[0, 1])
+    plt.xticks(loadingsnegT.index.values, lables, rotation=90)
+    plt.sca(axs[0, 2])
+    plt.xticks(loadingsnegT.index.values, lables, rotation=90)
+    plt.sca(axs[1, 0])
+    plt.xticks(loadingsnegT.index.values, lables, rotation=90)
+    plt.sca(axs[1, 1])
+    plt.xticks(loadingsnegT.index.values, lables, rotation=90)
+    plt.sca(axs[1, 2])
+    plt.xticks(loadingsnegT.index.values, lables, rotation=90)
+    #plt.xticks(loadingsnegT.index.values, labels, rotation=90)
     plt.tight_layout()
+    plt.show()
     
     
-    return loadings, pca_fit
+    print(loadingsnegT.to_latex())
+    
+    return loadingsnegT, pca_fit
 
 
 
@@ -77,26 +102,48 @@ def FA(dfrets):
     fa_fit = fa.fit(dfrets)
     loadings = pd.DataFrame(fa_fit.components_)
     loadings_t = loadings.transpose()
-    loadingsneg = loadings_t*-1
+    loadingsnegT = loadings_t#*-1
     
-    print(loadings)
     # plot
-    fig,axs = plt.subplots(2,3)
-    axs[0,0].bar(x= loadings_t.index.values, height=loadingsneg.iloc[:,1],label='pc1')
-    axs[0,1].bar(x= loadings_t.index.values, height=loadingsneg.iloc[:,2],label='pc2')
-    axs[0,2].bar(x= loadings_t.index.values, height=loadingsneg.iloc[:,3],label='pc3')
-    axs[1,0].bar(x= loadings_t.index.values, height=loadingsneg.iloc[:,4],label='pc4')
-    axs[1,1].bar(x= loadings_t.index.values, height=loadingsneg.iloc[:,5],label='pc5')
-    axs[1,2].bar(x= loadings_t.index.values, height=loadingsneg.iloc[:,6],label='pc6') # overlap but plox
-    plt.tight_layout()
+    lables = dfrets.columns
+
+    fig,axs = plt.subplots(2,3,figsize=(10,8))
+    axs[0,0].bar(x= loadingsnegT.index.values, height=loadingsnegT.iloc[:,0],label='F1')
+    axs[0,0].set_title('F1')
+    axs[0,1].bar(x= loadingsnegT.index.values, height=loadingsnegT.iloc[:,1],label='F2')
+    axs[0,1].set_title('F2')
+    axs[0,2].bar(x= loadingsnegT.index.values, height=loadingsnegT.iloc[:,2],label='F3')
+    axs[0,2].set_title('F3')
+    axs[1,0].bar(x= loadingsnegT.index.values, height=loadingsnegT.iloc[:,3],label='F4')
+    axs[1,0].set_title('F4')
+    axs[1,1].bar(x= loadingsnegT.index.values, height=loadingsnegT.iloc[:,4],label='F5')
+    axs[1,1].set_title('F5')
+    axs[1,2].bar(x= loadingsnegT.index.values, height=loadingsnegT.iloc[:,5],label='F6') # overlap but plox
+    axs[1,2].set_title('F6')
     
-    #print(np.cumsum(fa_fit.explained_variance_ratio))
+    plt.sca(axs[0, 0])
+    plt.xticks(loadingsnegT.index.values, lables, rotation=90)
+    plt.sca(axs[0, 1])
+    plt.xticks(loadingsnegT.index.values, lables, rotation=90)
+    plt.sca(axs[0, 2])
+    plt.xticks(loadingsnegT.index.values, lables, rotation=90)
+    plt.sca(axs[1, 0])
+    plt.xticks(loadingsnegT.index.values, lables, rotation=90)
+    plt.sca(axs[1, 1])
+    plt.xticks(loadingsnegT.index.values, lables, rotation=90)
+    plt.sca(axs[1, 2])
+    plt.xticks(loadingsnegT.index.values, lables, rotation=90)
+    #plt.xticks(loadingsnegT.index.values, labels, rotation=90)
+    plt.tight_layout()
+    plt.show()
+    
+    print(loadingsnegT.to_latex())
     
     return loadings_t
 
 
 
-def Biv_copulas(dfrets, copula_dist):
+def Biv_copulas_bad(dfrets, copula_dist):
     # copula_dist can be:
     # [normal, student, clayton, frank, gumbel]
     
@@ -104,62 +151,101 @@ def Biv_copulas(dfrets, copula_dist):
     import numpy as np
     import matplotlib.pyplot as plt
     ticker_list = ['ASML.AS', 'SONY', 'AKZA.AS', 'BAYN.DE', 'TSN', 'NTDOY', 'SQNXF', 'AMD','CSGN.SW', 'MUFG']    
+    pair = [['CSGN.SW_ret', 'BAYN.DE_ret'], ['TSN_ret', 'BAYN.DE_ret'], ['AMD_ret', 'ASML.AS_ret'], ['SONY_ret','SQNXF_ret']]
     
     #for i in [1,5,8]:
-    for i in [1]:
-        dfcop = dfrets.iloc[:,i:i+2]
+    for i in [0]:
+        dfcop = dfrets[pair[3]]
         _,ndim = dfcop.shape
         plt.scatter(dfcop.iloc[:,0], dfcop.iloc[:,1])
         plt.title(str(dfcop.columns[0])+' and '+str(dfcop.columns[1]))
+        plt.show()
 
         if copula_dist == 'normal':
-            from copulae import GaussianCopula
+            from copulae.elliptical import GaussianCopula
             cop = GaussianCopula(dim=ndim)
+            pobsdata = GaussianCopula.pobs(dfcop)
             cop.fit(dfcop)
-            print('params are', cop.params)
+            plt.scatter(pobsdata.iloc[:,0], pobsdata.iloc[:,1],alpha=0.5)
+            plt.title(str(dfcop.columns[0])+' and '+str(dfcop.columns[1]))
+            plt.show()
             
         elif copula_dist == 'student':
-            from copulae import StudentCopula
+            from copulae.elliptical import StudentCopula
             cop = StudentCopula(dim=ndim)
+            pobsdata = StudentCopula.pobs(dfcop)
             cop.fit(dfcop)
-            print('params are', cop.params)
+            plt.scatter(pobsdata.iloc[:,0], pobsdata.iloc[:,1],alpha=0.5)
+            plt.title(str(dfcop.columns[0])+' and '+str(dfcop.columns[1]))
+            plt.show()
             
         elif copula_dist == 'clayton':
-            from copulae import ClaytonCopula
+            from copulae.archimedean import ClaytonCopula
             cop = ClaytonCopula(dim=ndim)
+            pobsdata = ClaytonCopula.pobs(dfcop)
             cop.fit(dfcop)
-            print('params are', cop.params)
+            plt.scatter(pobsdata.iloc[:,0], pobsdata.iloc[:,1],alpha=0.5)
+            plt.title(str(dfcop.columns[0])+' and '+str(dfcop.columns[1]))
+            plt.show()
             
         elif copula_dist == 'frank':
-            from copulae import FrankCopula
+            from copulae.archimedean import FrankCopula
             cop = FrankCopula(dim=ndim)
+            pobsdata = FrankCopula.pobs(dfcop)
             cop.fit(dfcop)
-            print('params are', cop.params)
+            plt.scatter(pobsdata.iloc[:,0], pobsdata.iloc[:,1],alpha=0.5)
+            plt.title(str(dfcop.columns[0])+' and '+str(dfcop.columns[1]))
+            plt.show()
             
         elif copula_dist == 'gumbel':
-            from copulae import GumbelCopula
+            from copulae.archimedean import GumbelCopula
             cop = GumbelCopula(dim=ndim)
+            pobsdata = GumbelCopula.pobs(dfcop)
             cop.fit(dfcop)
-            print('params are', cop.params)
-            
+            plt.scatter(pobsdata.iloc[:,0], pobsdata.iloc[:,1],alpha=0.5)
+            plt.title(str(dfcop.columns[0])+' and '+str(dfcop.columns[1]))
+            plt.show()
+        
+    print('params are', cop.params)
     print('log lik =', cop._fit_smry.log_lik)
+    
     return cop
 
 
+
+def Biv_copulas_good(dfrets):
+    import copulas
+    pairs = [['CSGN.SW_ret', 'BAYN.DE_ret'], ['',''],['','']]
+    
+    
+    
+    
 def EVT(dfrets):
     
     return 'This function is not complete yet...'
 '''====================================== RUN HERE =================================='''
 
 df,dfrets = DataPuller_assignment3() # get data
+dfretsneg = dfrets*-1
+
+#loadings = FA(dfretsneg)
+
 #dfrets_flip = dfrets.iloc[:, ::-1]
-#test = Biv_copulas(dfrets, 'student')
 
-sumobject = sumstats(dfrets)
+test = Biv_copulas_bad(dfretsneg, 'gumbel')
+# normal, student, clayton, frank, gumbel
 
+# sumobject = sumstats(dfrets)
 
+import numpy as np
+from scipy import stats
 
+np.mean(dfrets['SQNXF_ret'])
+np.std(dfrets['SQNXF_ret'])
 
+stats.t.fit(dfretsneg['SQNXF_ret'])
+
+stats.t.ppf(0.025, 3.5, 0.00055, 0.0241)
 
 
 
