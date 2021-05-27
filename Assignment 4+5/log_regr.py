@@ -8,6 +8,12 @@ https://www.kaggle.com/c/GiveMeSomeCredit/data?select=cs-training.csv
 Created on Mon May 24 12:19:11 2021
 
 @author: MauritsOever
+
+To Do:
+    - get information values (IVs) of all variables boiiii
+    - get feature engineering, like get new feature, fill nans, get smote, then divide into xtrain, xtrain_smote, xtrain_smote_newfeatures
+    - get output for logreg for all these guys and get metrics
+    - check SHAP plots and staff, and then select most important ones xdd (take IV into account)
 """
 
 # packages
@@ -22,56 +28,64 @@ Data part, load in and clean NA's
 """
 # load in data:
 train = pd.read_csv(r'C:\Users\gebruiker\Documents\GitHub\QFRM\Assignment 4+5\cs-training.csv')
-# test = pd.read_csv(r'C:\Users\gebruiker\Documents\GitHub\QFRM\Assignment 4+5\cs-test.csv')
-# SeriousDLQin2yrs is target variable
-# dont have true y for test set so might just ignore...
 
 # check for NaNs, plot nan amounts
-import matplotlib.pyplot as plt
-nanamounts = train.isna().sum().values[1:] # monthly income and number of dependents have NaNs
-plt.bar(train.columns[1:], nanamounts)
-plt.xticks(rotation = 90)
-#plt.tight_layout()
-plt.show()
-
-# bad practice in this case but fill with means for now:
-train['MonthlyIncome'] = train.MonthlyIncome.fillna(0.0)
-train['NumberOfDependents'] = train.NumberOfDependents.fillna(train.NumberOfDependents.quantile(0.995))
-# test = test.fillna(test.mean())
+# import matplotlib.pyplot as plt
+# nanamounts = train.isna().sum().values[1:] # monthly income and number of dependents have NaNs
+# plt.bar(train.columns[1:], nanamounts)
+# plt.xticks(rotation = 90)
+# #plt.tight_layout()
+# plt.show()
 
 
 """
 Feature engineering part:
     - missing_income_bool
+    - mssing_number_dependents_bool
     - 
+    
+    basically make a function that returns:
+        - xtrain without extra features but with nans filled, and ytrain
+        - xtrain with extra features and with nans filled, and ytrain
+        - xtrain with extra features but drop the bad ones by SHAP...
 
 """
-columns = ['SeriousDlqin2yrs',
-       'RevolvingUtilizationOfUnsecuredLines', 'age',
-       'NumberOfTime30-59DaysPastDueNotWorse', 'DebtRatio', 'MonthlyIncome',
-       'NumberOfOpenCreditLinesAndLoans', 'NumberOfTimes90DaysLate',
-       'NumberRealEstateLoansOrLines', 'NumberOfTime60-89DaysPastDueNotWorse',
-       'NumberOfDependents']
 
-ytrain = train[columns[0]]
-xtrain = train[columns[1:]]
-#xtest = test[columns[1:]]
+def feature_engineering(train):
+    columns = ['SeriousDlqin2yrs',
+           'RevolvingUtilizationOfUnsecuredLines', 'age',
+           'NumberOfTime30-59DaysPastDueNotWorse', 'DebtRatio', 'MonthlyIncome',
+           'NumberOfOpenCreditLinesAndLoans', 'NumberOfTimes90DaysLate',
+           'NumberRealEstateLoansOrLines', 'NumberOfTime60-89DaysPastDueNotWorse',
+           'NumberOfDependents']
+    
+    ytrain = train[columns[0]]
+    xtrain = train[columns[1:]]
+    #xtest = test[columns[1:]]
+    
+    # impute NA's
+    train['MonthlyIncome'] = train.MonthlyIncome.fillna(0.0)
+    train['NumberOfDependents'] = train.NumberOfDependents.fillna(train.NumberOfDependents.quantile(0.995))
+    
+    # SMOTE https://machinelearningmastery.com/smote-oversampling-for-imbalanced-classification/
+    # should make this a function...
+    from imblearn.over_sampling import SMOTE
+    oversample = SMOTE()
+    xtrain_smote, ytrain_smote = oversample.fit_resample(xtrain, ytrain)
+    # still need plots before and after smote
+    
+    # continue after smote with new feature engineering
+
+    return ytrain, xtrain, ytrain_smote, xtrain_smote, ytrain_smote_newfeatures, xtrain_smote_newfeatures, xtrain_selected_features
 
 
-# SMOTE 
-from imblearn.over_sampling import SMOTE
-from imblearn.under_sampling import RandomUnderSampler
-from imblearn.pipeline import Pipeline
-
-oversample = SMOTE()
-xtrain, ytrain = oversample.fit_resample(xtrain, ytrain)
-# transform the dataset
 
 
 """
 Fit logistic regression here:
     - could use full fit for interpretation
 """
+
 def logreg_fit(xtrain, ytrain):
     from sklearn.linear_model import LogisticRegression
     logreg = LogisticRegression(n_jobs=-1, max_iter=1000)
@@ -85,10 +99,10 @@ def logreg_fit(xtrain, ytrain):
 
 
 """
-Some metrics, threshold might need tweaking...
-    - SMOTE, defaults are obvi unbalanced...
+Some metrics
 """
 def metrics(fitobject, xtrain, ytrain):
+    import matplotlib.pyplot as plt
     from sklearn.metrics import plot_roc_curve
     from sklearn.metrics import confusion_matrix
     pred_ytrain = fitobject.predict(xtrain)
@@ -130,21 +144,22 @@ def crossvalidate(xtrain, ytrain, method):
     and out of sample performances...
 
     """
+    third = int(len(ytrain)/3)
     # create folds:
-    x_in1 = xtrain.iloc[0:100000,:]
-    y_in1 = ytrain[0:100000]
-    x_out1 = xtrain.iloc[100000:,:]
-    y_out1 = ytrain[100000:]
+    x_in1 = xtrain.iloc[0:2*third,:]
+    y_in1 = ytrain[0:2*third]
+    x_out1 = xtrain.iloc[2*third:,:]
+    y_out1 = ytrain[2*third:]
     
-    x_in2 = xtrain.drop(xtrain.index[50000:100000])
-    y_in2 = ytrain.drop(ytrain.index[50000:100000])
-    x_out2 = xtrain.iloc[50000:100000,:]
-    y_out2 = ytrain[50000:100000]
+    x_in2 = xtrain.drop(xtrain.index[third:2*third])
+    y_in2 = ytrain.drop(ytrain.index[third:2*third])
+    x_out2 = xtrain.iloc[third:2*third,:]
+    y_out2 = ytrain[third:2*third]
     
-    x_in3 = xtrain.iloc[0:50000,:]
-    y_in3 = ytrain[0:50000]
-    x_out3 = xtrain.iloc[50000:,:]
-    y_out3 = ytrain[50000:]
+    x_in3 = xtrain.iloc[third:,:]
+    y_in3 = ytrain[third:]
+    x_out3 = xtrain.iloc[0:third,:]
+    y_out3 = ytrain[0:third]
     
     
     if method == 'logreg':
@@ -177,8 +192,16 @@ def crossvalidate(xtrain, ytrain, method):
         return logreg1, logreg2, logreg3
 
 
-logreg1, logreg2, logreg3 = crossvalidate(xtrain, ytrain, 'logreg')
+# =============================================================================
+# Structure results like this:
+#     - get normal fit without feature selection, no smote
+#     - include smote
+#     - include feature engineering
+#     - include feature selection to avoid overfitting
+# =============================================================================
 
+# alldatasets = feature_engineering(train)
+# then crossvalidate(in order)
 
 
 
@@ -195,7 +218,7 @@ ML PART
 Light GBM - check out
 could also do
 """
-
+# structure ML in the same way as 
 
 
 
