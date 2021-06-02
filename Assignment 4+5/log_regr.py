@@ -10,17 +10,13 @@ Created on Mon May 24 12:19:11 2021
 @author: MauritsOever
 
 To Do:
-    - implement iv func
-    - maybe more feature engineering
-    - get output for logreg for all these guys and get metrics, and residual analysis
-    - check SHAP plots and staff, and then select most important ones xdd (take IV into account)
+    - ML implementation: gradient boosting
 """
 
 """
 Feature engineering part:
     - missing_income_bool
     - mssing_number_dependents_bool
-    - 
     
     basically make a function that returns:
         - xtrain without extra features but with nans filled, and ytrain
@@ -71,7 +67,7 @@ def feature_engineering(train):
 
 
 """
-Fit logistic regression here:
+Fit logistic regression/ ML here here:
 """
 
 def logreg_fit(xtrain, ytrain):
@@ -81,6 +77,14 @@ def logreg_fit(xtrain, ytrain):
     # okay we fitted, lets predict
     #pred_proba_ytrain = logreg.predict_proba(xtrain) #used to compare to real defaults...
     return logreg
+
+
+def ML_fit(xtrain, ytrain):
+    from sklearn.ensemble import GradientBoostingClassifier
+    gboost = GradientBoostingClassifier()
+    gboost = gboost.fit(xtrain, ytrain)
+    
+    return gboost
 
 
 """
@@ -155,9 +159,9 @@ def crossvalidate(xtrain, ytrain, method):
     
     
     if method == 'logreg':
-        logreg1 = logreg_fit(x_in1, y_in1)
-        logreg2 = logreg_fit(x_in2, y_in2)
-        logreg3 = logreg_fit(x_in3, y_in3)
+        model1 = logreg_fit(x_in1, y_in1)
+        model2 = logreg_fit(x_in2, y_in2)
+        model3 = logreg_fit(x_in3, y_in3)
         
         # print('Model 1: ')
         # print('constant: ', logreg1.intercept_)
@@ -173,15 +177,30 @@ def crossvalidate(xtrain, ytrain, method):
         # print('')
         
         print('model 1 metrics: ')
-        metrics(logreg1, x_out1, y_out1)
+        metrics(model1, x_out1, y_out1)
         print('')
         print('model 2 metrics: ')
-        metrics(logreg2, x_out2, y_out2)
+        metrics(model2, x_out2, y_out2)
         print('')
         print('model 3 metrics: ')
-        metrics(logreg3, x_out3, y_out3)
+        metrics(model3, x_out3, y_out3)
         
-        return logreg1, logreg2, logreg3
+    if method == 'ML':
+        model1 = ML_fit(x_in1, y_in2)
+        model2 = ML_fit(x_in2, y_in2)
+        model3 = ML_fit(x_in3, y_in3)
+        
+        print('model 1 metrics: ')
+        metrics(model1, x_out1, y_out1)
+        print('')
+        print('model 2 metrics: ')
+        metrics(model2, x_out2, y_out2)
+        print('')
+        print('model 3 metrics: ')
+        metrics(model3, x_out3, y_out3)
+      
+        
+    return model1, model2, model3
 
 
 
@@ -239,16 +258,17 @@ def fit_and_residual_analysis(xtrain, ytrain):
   
 def feature_selection(xtrain_feat_smote, ytrain_feat_smote):    
     # get IV's and 
-    from IV_code import data_vars
+    # if IV_code doesnt import, u need to specify the current directory using:
+    # cd C:\Users\gebruiker\Documents\GitHub\QFRM\Assignment 4+5
+    # from IV_code import data_vars
     
-    iv = data_vars(xtrain_feat_smote, ytrain_feat_smote)
-    print(iv[1].to_latex())
-    new_columns = iv[1]['VAR_NAME'][-5:].values
+    # iv = data_vars(xtrain_feat_smote, ytrain_feat_smote)
+    # print(iv[1].to_latex())
+    # new_columns = iv[1]['VAR_NAME'][-5:].values
     
     # just put manually based on SHAP and IV...
-    # new_columns = ['RevolvingUtilizationOfUnsecuredLines', 'NumberOfTimes90DaysLate',
-    #                'NumberOfTime30-59DaysPastDueNotWorse', 'NumberOfTime60-89DaysPastDueNotWorse',
-    #                'age']
+    new_columns = ['NumberOfDependents', 'NumberOfDependents' , 'NumberOfTimes90DaysLate',
+                    'NumberRealEstateLoansOrLines', 'NumberOfTime30-59DaysPastDueNotWorse']
     
     xtrain_selectedfeat_smote = xtrain_feat_smote[new_columns]
     ytrain_selectedfeat_smote = ytrain_feat_smote
@@ -267,6 +287,29 @@ def feature_selection(xtrain_feat_smote, ytrain_feat_smote):
 
 
 
+def fit_analysis_ML(xtrain, ytrain):
+    import shap
+    import matplotlib.pyplot as plt
+    from sklearn.metrics import plot_roc_curve
+    
+    model = ML_fit(xtrain, ytrain)
+    plot_roc_curve(model, xtrain, ytrain)
+    plt.show()
+    
+    print('')
+    print('Feature selection: ')
+    
+    shapdata = shap.sample(xtrain, 80)
+    explainer = shap.explainers.Exact(model.predict_proba, shapdata)
+    shap_values = explainer(xtrain[:100])
+    shap_values = shap_values[...,1]
+    
+    shap.plots.beeswarm(shap_values)
+    shap.plots.waterfall(shap_values[2,:])
+    
+    # plot_roc_curve
+    return model
+
 
 """ 
 Thing u actually run
@@ -280,12 +323,14 @@ from icecream import ic
 # load in and make data sets:
 train = pd.read_csv(r'C:\Users\gebruiker\Documents\GitHub\QFRM\Assignment 4+5\cs-training.csv')
 ytrain, xtrain, ytrain_smote, xtrain_smote, ytrain_feat_smote, xtrain_feat_smote = feature_engineering(train) 
-# ytrain, xtrain, _, _, _, _ = feature_engineering(train)
 xtrain_selectedfeat_smote, ytrain_selectedfeat_smote = feature_selection(xtrain_feat_smote, ytrain_feat_smote)
 
 
-#fit_and_residual_analysis(xtrain, ytrain)
-#crossvalidate(xtrain, ytrain, 'logreg')
+
+
+# run this for all models logreg
+fit_and_residual_analysis(xtrain, ytrain)
+crossvalidate(xtrain, ytrain, 'logreg')
 
 fit_and_residual_analysis(xtrain_smote, ytrain_smote)
 crossvalidate(xtrain_smote, ytrain_smote, 'logreg')
@@ -294,8 +339,9 @@ fit_and_residual_analysis(xtrain_feat_smote, ytrain_feat_smote)
 crossvalidate(xtrain_feat_smote, ytrain_feat_smote, 'logreg')
 
 
-crossvalidate(xtrain_selectedfeat_smote, ytrain_selectedfeat_smote, 'logreg')
 fit_and_residual_analysis(xtrain_selectedfeat_smote, ytrain_selectedfeat_smote)
+crossvalidate(xtrain_selectedfeat_smote, ytrain_selectedfeat_smote, 'logreg')
+
 
 
 
@@ -305,13 +351,22 @@ fit_and_residual_analysis(xtrain_selectedfeat_smote, ytrain_selectedfeat_smote)
 """
 ML PART
 
-Light GBM - check out
-could also do
+Doing gradientboostingclassifier rn, works really well...
 """
 # structure ML in the same way as 
 
+# run this for all models ML - gradient booster...
+fit_analysis_ML(xtrain, ytrain)
+crossvalidate(xtrain, ytrain, 'ML')
 
+fit_analysis_ML(xtrain_smote, ytrain_smote)
+crossvalidate(xtrain_smote, ytrain_smote, 'ML')
 
+fit_analysis_ML(xtrain_feat_smote, ytrain_feat_smote)
+crossvalidate(xtrain_feat_smote, ytrain_feat_smote, 'ML')
+
+fit_analysis_ML(xtrain_selectedfeat_smote, ytrain_selectedfeat_smote)
+crossvalidate(xtrain_selectedfeat_smote, ytrain_selectedfeat_smote, 'ML')
 
 
 
